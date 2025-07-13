@@ -7,8 +7,8 @@ const userSchema=new Schema({
     password:{
         type:String, required:true
     },
-    isRecruiter:{
-        type:Boolean, default:false
+    role:{
+        type:String,enum:['applicant','recruiter','admin'],default:'applicant'
     }
 
 },{timestamps:true});

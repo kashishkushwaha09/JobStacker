@@ -2,11 +2,13 @@ const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
 const profileSchema=new Schema({
 userId:{type:Schema.Types.ObjectId,ref:"User", required:true},
+//common fields for both recruiter and applicant
 name:{type:String,required:true},
 headline:String,
 about:String,
 location:String,
 profilePicture:String,
+// Applicant-specific fields
 resumeUrl:String,
 skills:[String],
 experience:[
@@ -38,5 +40,9 @@ projects: [
       githubLink: String
     }
   ],
+  // Recruiter-specific fields
+  companyName:String,
+  companyAbout:String,
+  companyLocation:String,
 },{timestamps:true});
 module.exports=mongoose.model("Profile",profileSchema);
