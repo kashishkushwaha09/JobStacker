@@ -108,6 +108,33 @@ const updateProfileRecruiter = async (req, res, next) => {
         next(error);
     }
 }
+const deleteProfile=async (req,res,next)=>{
+    try {
+        const userId=req.user._id;
+        const message =await profileService.deleteProfile(userId);
+        res.status(200).json({message:message,success:true});
+    } catch (error) {
+        console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        next(error);
+    }
+}
+const getProfile=async (req,res,next)=>{
+      try {
+        const userId=req.user._id;
+        const id=req.params.id;
+        const profile =await profileService.getProfile(userId,id);
+        res.status(200).json({message:'profile fetched',profile,success:true});
+    } catch (error) {
+        console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        next(error);
+    }
+}
 module.exports = {
-    updateProfileApplicant, updateProfileRecruiter
+    updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile
 }

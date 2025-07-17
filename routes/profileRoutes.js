@@ -11,4 +11,6 @@ router.post('/applicant',authenticateUser,upload.fields([
 ]),profileController.updateProfileApplicant);
 
 router.post('/recruiter',authenticateUser,upload.single('profilePicture'),profileController.updateProfileRecruiter);
+router.delete('/',authenticateUser,profileController.deleteProfile);
+router.get('/:id',authenticateUser,profileController.getProfile);
 module.exports=router;
