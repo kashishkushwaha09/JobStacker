@@ -13,7 +13,7 @@ const findByEmail = async (email) => {
         throw new AppError(error.message, 500);
     }
 }
-const signUp = async (name, email, password, isRecruiter) => {
+const signUp = async (name, email, password, role) => {
     try {
         const existingUser = await findByEmail(email);
         if (existingUser) {
@@ -21,7 +21,7 @@ const signUp = async (name, email, password, isRecruiter) => {
         }
        const hashPassword=await bcrypt.hash(password,13);
        const newUser=new User({
-        email,password:hashPassword,isRecruiter
+        email,password:hashPassword,role
        })
        await newUser.save();
        const userId=newUser._id;

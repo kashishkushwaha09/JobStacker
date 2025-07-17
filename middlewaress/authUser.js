@@ -3,7 +3,9 @@ const User=require('../models/userModel');
 const { AppError } = require('../utils/appError');
 
 const authenticateUser=async (req,res,next)=>{
-    const authHeader=req.header.authorization;
+    const authHeader=req.headers.authorization;
+    console.log("auth user before profile");
+    console.log(authHeader);
     if(!authHeader || !authHeader.startsWith('Bearer ')){
      throw new AppError("Unauthorized",401);
     }

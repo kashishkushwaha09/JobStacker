@@ -10,8 +10,9 @@ location:String,
 profilePicture:String,
 // Applicant-specific fields
 resumeUrl:String,
-skills:[String],
-experience:[
+skills:{ type: [String], default: [] },
+experience:{
+  type: [
     {
       jobTitle: String,
       companyName: String,
@@ -19,9 +20,12 @@ experience:[
       endDate: Date,
       location: String,
       description: String,
-    }
-],
-education:[
+    },
+  ],
+  default: [],
+},
+education:{
+  type: [
     {
       schoolName: String,
       degree: String,
@@ -29,17 +33,22 @@ education:[
       startYear: Number,
       endYear: Number,
       description: String,
-    }
-],
-projects: [
+    },
+  ],
+  default: [],
+},
+projects: {
+  type: [
     {
       title: String,
       description: String,
       techStack: [String],
       projectUrl: String,
-      githubLink: String
-    }
+      githubLink: String,
+    },
   ],
+  default: [],
+},
   // Recruiter-specific fields
   companyName:String,
   companyAbout:String,

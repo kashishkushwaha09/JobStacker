@@ -5,9 +5,12 @@ const mongoose=require('mongoose');
 const mongoDbURL=process.env.MONGO_URL;
 const errorMiddleware=require('./middlewaress/errorHandler');
 const authRoute=require('./routes/authRoutes');
+const profileRoute=require('./routes/profileRoutes');
 app.use(express.json());
 
 app.use('/api/auth',authRoute);
+app.use('/api/profile',profileRoute);
+
 app.use(errorMiddleware);
 const connectToMongo=async()=>{
     try {

@@ -4,8 +4,8 @@ const { AppError } = require('../utils/appError');
 const signUpUser=async(req,res,next)=>{
    
     try {
-        const {name,email,password,isRecruiter}=req.body;
-        const token=await authService.signUp(name,email,password,isRecruiter);
+        const {name,email,password,role}=req.body;
+        const token=await authService.signUp(name,email,password,role);
         if(!token){
             throw new AppError("Something Went Wrong!",500);
         }
