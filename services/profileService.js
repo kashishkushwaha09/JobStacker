@@ -1,7 +1,7 @@
 const Profile = require('../models/profileModel');
 const { AppError } = require('../utils/appError');
 
-const updateApplicant=async(updatedFields,userId)=>{
+const update=async(updatedFields,userId)=>{
 try {
     const existingProfile=await Profile.findOneAndUpdate({userId},updatedFields,{new:true});
 
@@ -16,6 +16,7 @@ if (!existingProfile) {
         throw error; 
 }
 }
+
 module.exports={
-    updateApplicant
+    update,
 }

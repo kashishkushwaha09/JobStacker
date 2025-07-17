@@ -69,7 +69,7 @@ const updateProfileApplicant = async (req, res, next) => {
             updatedFields.profilePicture=profileUpload.result.secure_url;
             updatedFields.resumeUrl=resumeUpload.rawfileUrl;
         }
-     const profile=await profileService.updateApplicant(updatedFields,req.user._id);
+     const profile=await profileService.update(updatedFields,req.user._id);
      res.status(200).json({message:"Profile Updated successfully",profile,success:true});
 } catch (error) {
     console.log(error);
@@ -83,6 +83,23 @@ const updateProfileRecruiter = async (req, res, next) => {
     try {
         const { name, headline, about, location, companyName, companyAbout, companyLocation } = req.body;
         // profilePicture from multer
+          const updatedFields = {};
+        if (typeof name === 'string' && name.trim()) updatedFields.name = name.trim();
+        if (typeof headline === 'string' && headline.trim()) updatedFields.headline = headline.trim();
+        if (typeof about === 'string' && about.trim()) updatedFields.about = about.trim();
+        if (typeof location === 'string' && location.trim()) updatedFields.location = location.trim();
+        if (typeof companyName === 'string' && companyName.trim()) updatedFields.companyName = companyName.trim();
+        if (typeof companyAbout === 'string' && companyAbout.trim()) updatedFields.companyAbout = companyAbout.trim();
+        if (typeof companyLocation === 'string' && companyLocation.trim()) updatedFields.companyLocation = companyLocation.trim();
+
+         if(req.file){
+            const profileFile = req.file;
+            const profileDataUri=`data:${profileFile.mimetype};base64,${profileFile.buffer.toString('base64')}`;
+            const profileUpload=await uploadToCloudinary(profileDataUri,'image');
+            updatedFields.profilePicture=profileUpload.result.secure_url;
+        }
+     const profile=await profileService.update(updatedFields,req.user._id);
+     res.status(200).json({message:"Profile Updated successfully",profile,success:true});
     } catch (error) {
         console.log(error);
         if (!(error instanceof AppError)) {

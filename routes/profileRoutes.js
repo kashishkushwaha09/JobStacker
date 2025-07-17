@@ -9,5 +9,6 @@ router.post('/applicant',authenticateUser,upload.fields([
    {name:'profilePicture',maxCount:1},
     {name:'resume',maxCount:1}
 ]),profileController.updateProfileApplicant);
-// router.post('/recruiter',signInValidation,validateRequest,authController.signInUser);
+
+router.post('/recruiter',authenticateUser,upload.single('profilePicture'),profileController.updateProfileRecruiter);
 module.exports=router;
