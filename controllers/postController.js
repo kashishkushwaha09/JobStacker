@@ -31,14 +31,46 @@ try {
 }
 
 const allPost=async(req,res,next)=>{
-
+try {
+    const posts=await postService.getAll();
+    if(!posts) throw new AppError("Something went wrong",500);
+    res.status(200).json({message:"Posts fetched successfully",posts,success:true});
+} catch (error) {
+     console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
 }
 const getOnePost=async(req,res,next)=>{
-
+try {
+    const id=req.params.id;
+    const post=await postService.getOne(id);
+    if(!post) throw new AppError("Something went wrong",500);
+    res.status(200).json({message:"Post fetched successfully",post,success:true});
+} catch (error) {
+     console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
 }
 
 const toggleLike=async(req,res,next)=>{
-
+try {
+    const userId=req.user._id;
+    const postId = req.params.postId;
+    const updatedPost=await postService.toggleLike(postId,userId);
+    res.status(200).json({message:"Like toggled successfully",likesCount: updatedPost.likes.length,success: true})
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error); 
+}
 }
 const addComment=async(req,res,next)=>{
 
