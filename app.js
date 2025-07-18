@@ -6,10 +6,12 @@ const mongoDbURL=process.env.MONGO_URL;
 const errorMiddleware=require('./middlewaress/errorHandler');
 const authRoute=require('./routes/authRoutes');
 const profileRoute=require('./routes/profileRoutes');
+const postRoute=require('./routes/postRoutes');
 app.use(express.json());
 
 app.use('/api/auth',authRoute);
 app.use('/api/profile',profileRoute);
+app.use('/api/post',postRoute);
 
 app.use(errorMiddleware);
 const connectToMongo=async()=>{
