@@ -7,12 +7,13 @@ const errorMiddleware=require('./middlewaress/errorHandler');
 const authRoute=require('./routes/authRoutes');
 const profileRoute=require('./routes/profileRoutes');
 const postRoute=require('./routes/postRoutes');
+const jobRoute=require('./routes/jobRoutes');
 app.use(express.json());
 
 app.use('/api/auth',authRoute);
 app.use('/api/profile',profileRoute);
 app.use('/api/post',postRoute);
-
+app.use('/api/job',jobRoute);
 app.use(errorMiddleware);
 const connectToMongo=async()=>{
     try {
