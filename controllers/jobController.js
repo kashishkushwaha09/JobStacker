@@ -41,12 +41,35 @@ try {
     next(error);
 }
 }
-// const getJobsPostedByUser=async(req,res,next)=>{
-
-// }
-// const update=async(req,res,next)=>{
-
-// }
+const getJobsPostedByUser=async(req,res,next)=>{
+try {
+    const userId=req.user._id;
+     const jobs=await jobService.getJobsPostedByUser(userId);
+    res.status(200).json({message:"Job fetched successfully!",jobs,success:true});
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
+}
+const update=async(req,res,next)=>{
+try {
+    const {title,description,salary,location}=req.body;
+    const userId=req.user._id;
+    const role=req.user.role;
+    const jobId=req.params.id;
+    const job=await jobService.update({title,description,salary,location},jobId,userId,role);
+    res.status(200).json({message:"Job updated successfully!",job,success:true});
+} catch (error) {
+     console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
+}
 // const deleteJob=async(req,res,next)=>{
 
 // }
@@ -54,6 +77,6 @@ try {
 
 // }
 module.exports={
-   create,getAll,getOneJob,
-//    getJobsPostedByUser,update,deleteJob,searchJobs
+   create,getAll,getOneJob,getJobsPostedByUser,update,
+//    deleteJob,searchJobs
 }

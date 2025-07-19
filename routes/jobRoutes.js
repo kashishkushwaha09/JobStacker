@@ -5,7 +5,9 @@ const {jobValidation} = require('../middlewaress/validations');
 const validateRequest=require('../middlewaress/validationRequest');
 const authenticateUser=require('../middlewaress/authUser');
 router.post('/',jobValidation,validateRequest,authenticateUser,jobController.create);
+router.put('/:id',authenticateUser,jobController.update);
 router.get('/',authenticateUser,jobController.getAll);
+router.get('/postedByRecruiter',authenticateUser,jobController.getJobsPostedByUser);
 router.get('/:id',authenticateUser,jobController.getOneJob);
-// router.post('/signIn',signInValidation,validateRequest,authController.signInUser);
+
 module.exports=router;

@@ -14,6 +14,32 @@ try {
     throw new AppError(error.message,500);
 }
 }
+const update=async(fields,jobId,userId,role)=>{
+try {
+    if(role!=='recruiter'){
+        throw new AppError("Only recruiters can update job posts", 403);
+    }
+   const profile=await Profile.findOne({userId});
+   const existedJob=await Job.findOne({_id:jobId,postedBy:profile._id});
+if(typeof fields.title==='string' && fields.title.trim()){
+    existedJob.title=fields.title.trim();
+}
+if(typeof fields.description==='string' && fields.description.trim()){
+    existedJob.description=fields.description.trim();
+}
+if(typeof fields.salary==='string' && fields.salary.trim()){
+    existedJob.salary=fields.salary.trim();
+}
+if(typeof fields.location==='string' && fields.location.trim()){
+    existedJob.location=fields.location.trim();
+}
+
+   await existedJob.save();
+   return existedJob;
+} catch (error) {
+    throw new AppError(error.message,500);
+}
+}
  
 const getAll=async()=>{
     try {
@@ -34,6 +60,18 @@ const getOne=async(jobId)=>{
     throw new AppError(error.message,500);
 }
 }
+const getJobsPostedByUser=async(userId)=>{
+    try {
+   const profile=await Profile.findOne({userId});
+   const jobs=await Job.find({postedBy:profile._id}).populate('postedBy','name companyName companyAbout companyLocation').lean();
+   if (!jobs) {
+  throw new AppError("Jobs not found", 404);
+}
+   return jobs;
+} catch (error) {
+    throw new AppError(error.message,500);
+} 
+}
 module.exports={
-    create,getAll,getOne
+    create,update,getAll,getOne,getJobsPostedByUser
 }
