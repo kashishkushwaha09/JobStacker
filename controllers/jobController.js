@@ -16,12 +16,31 @@ try {
     next(error);
 }
 }
-// const getAll=async(req,res,next)=>{
-
-// }
-// const getOneJob=async(req,res,next)=>{
-
-// }
+const getAll=async(req,res,next)=>{
+try {
+    const jobs=await jobService.getAll();
+    res.status(200).json({message:"Jobs fetched successfully!",jobs,success:true});
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
+}
+const getOneJob=async(req,res,next)=>{
+try {
+    const jobId=req.params.id;
+     const job=await jobService.getOne(jobId);
+    res.status(200).json({message:"Job fetched successfully!",job,success:true});
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
+}
 // const getJobsPostedByUser=async(req,res,next)=>{
 
 // }
@@ -35,6 +54,6 @@ try {
 
 // }
 module.exports={
-   create,
-//    getAll,getOneJob,getJobsPostedByUser,update,deleteJob,searchJobs
+   create,getAll,getOneJob,
+//    getJobsPostedByUser,update,deleteJob,searchJobs
 }
