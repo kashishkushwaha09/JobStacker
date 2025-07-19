@@ -73,17 +73,80 @@ try {
 }
 }
 const addComment=async(req,res,next)=>{
-
+try {
+    const userId=req.user._id;
+    const postId = req.params.postId;
+    const text=req.body.text;
+    const updatedPost=await postService.addComment(postId,userId,text);
+    res.status(200).json({message:"Comment added successfully",commentsCount: updatedPost.comments.length,success: true})
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error); 
+}
 }
 const deleteComment=async(req,res,next)=>{
-
+try {
+    const userId=req.user._id;
+    const postId = req.params.postId;
+    const commentId=req.params.commentId;
+    const updatedPost=await postService.deleteComment(postId,userId,commentId);
+    res.status(200).json({message:"Comment deleted successfully",commentsCount: updatedPost.comments.length,success: true})
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error); 
+}
 }
 
 const editPost=async(req,res,next)=>{
+try {
+    const {content}=req.body;
+    const postId = req.params.postId;
+    const userId=req.user._id;
+   
+    let imageUrl;
+    if(req.file){
+        const imageFile = req.file;
+        const imageDataUri=`data:${imageFile.mimetype};base64,${imageFile.buffer.toString('base64')}`;
+        const imageUpload=await uploadToCloudinary(imageDataUri,'image');
+        imageUrl=imageUpload.result.secure_url;
+    }
+    const fields={};
+    fields.userId=userId;
+    fields.postId=postId;
+    if (typeof content === 'string' && content.trim()) fields.content = content.trim();
+    if (typeof imageUrl === 'string' && imageUrl.trim()) fields.imageUrl = imageUrl.trim();
+    const post=await postService.edit(fields);
+    res.status(200).json({message:"Post updated successfully",post,success:true});
 
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
 }
 const deletePost=async(req,res,next)=>{
+try {
+    const postId = req.params.postId;
+    const userId=req.user._id;
+   
+    const post=await postService.deletePost(postId,userId);
+    res.status(200).json({message:"Post deleted successfully",post,success:true});
 
+} catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
 }
 
 
