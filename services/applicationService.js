@@ -23,10 +23,64 @@ try {
     await newApplication.save();
     return newApplication;
 } catch (error) {
-   throw new AppError(error.message,500); 
+   if(!(error instanceof AppError)){
+            error=new AppError(error.message,500);
+        }
+        throw error; 
 }
 }
+const getMyApplications=async(profileId)=>{
+    try {
+        const applications=await Application.find({ applicant: profileId })
+      .populate('job', 'title location')
+      .sort('-createdAt');
+      return applications;
+    } catch (error) {
+      throw new AppError(error.message,500);
+    }
+}
+const getApplicationsByJob=async(jobId,profileId)=>{
+    try {
+        const job=await jobService.getOne(jobId);
+    if (job.postedBy._id.toString() !== profileId.toString()) {
+      throw new AppError("Unauthorized access", 403);
+    }
 
+    const applications = await Application.find({ job: jobId })
+      .populate('applicant', 'name headline location skills');
+      if(!applications) throw new AppError("applications not found",404);
+     return applications;
+    } catch (error) {
+         if(!(error instanceof AppError)){
+            error=new AppError(error.message,500);
+        }
+        throw error; 
+    }
+}
+const updateApplicationStatus=async(appId,profileId,status)=>{
+    try {
+         if (!["accepted", "rejected"].includes(status)) {
+      throw new AppError("Invalid status", 400);
+    }
+
+    const application = await Application.findById(appId).populate('job');
+    if (!application) throw new AppError("Application not found", 404);
+
+    const job = application.job;
+    if (job.postedBy.toString() !== profileId.toString()) {
+      throw new AppError("Not authorized to update this application", 403);
+    }
+
+    application.status = status;
+    await application.save();
+
+    } catch (error) {
+         if(!(error instanceof AppError)){
+            error=new AppError(error.message,500);
+        }
+        throw error; 
+    }
+}
 module.exports={
-    apply
+    apply,getMyApplications,getApplicationsByJob,updateApplicationStatus
 }
