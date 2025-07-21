@@ -54,6 +54,21 @@ if (!existingProfile) {
         throw error; 
 }
 }
+const myProfile=async(userId,profileId)=>{
+      try {
+    const existingProfile=await Profile.findOne({_id:profileId,userId});
+
+if (!existingProfile) {
+      throw new AppError('Profile not found', 404);
+    }
+    return existingProfile;
+} catch (error) {
+    if(!(error instanceof AppError)){
+            error=new AppError(error.message,500);
+        }
+        throw error; 
+}
+}
 module.exports={
-    update,deleteProfile,getProfile
+    update,deleteProfile,getProfile,myProfile
 }

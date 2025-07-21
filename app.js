@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express=require('express');
+const path=require("path");
 const app=express();
 const mongoose=require('mongoose');
 const mongoDbURL=process.env.MONGO_URL;
@@ -9,6 +10,7 @@ const profileRoute=require('./routes/profileRoutes');
 const postRoute=require('./routes/postRoutes');
 const jobRoute=require('./routes/jobRoutes');
 const applicationRoute=require('./routes/applicationRoutes');
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
 app.use('/api/auth',authRoute);

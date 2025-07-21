@@ -62,7 +62,7 @@ try {
             process.env.SECRET_KEY,
             {expiresIn:'7d'}
         );
-        return {token,userId:existingUser._id};
+        return {token,userId:existingUser._id,role:existingUser.role};
 } catch (error) {
     if(!(error instanceof AppError)){
             error=new AppError(error.message,500);

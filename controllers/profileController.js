@@ -135,6 +135,20 @@ const getProfile=async (req,res,next)=>{
         next(error);
     }
 }
+const myProfile=async (req,res,next)=>{
+      try {
+        const userId=req.user._id;
+        const profileId=req.profile._id;
+        const profile =await profileService.myProfile(userId,profileId);
+        res.status(200).json({message:'profile fetched',profile,success:true});
+    } catch (error) {
+        console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        next(error);
+    }
+}
 module.exports = {
-    updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile
+    updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile,myProfile
 }
