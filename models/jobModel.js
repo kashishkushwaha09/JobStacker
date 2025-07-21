@@ -18,7 +18,15 @@ const jobSchema=new Schema({
     },
     location:{
         type:String, required:true
-    }
+    },
+    skillsRequired: {
+    type: [String],
+    default: []
+  },
+   isActive: {
+    type: Boolean,
+    default: true
+  }
 },{timestamps:true});
 
 module.exports=mongoose.model("Job",jobSchema);

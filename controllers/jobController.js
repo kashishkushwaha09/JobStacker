@@ -1,12 +1,24 @@
 const { AppError } = require("../utils/appError");
 const jobService=require('../services/jobService');
 
+ const parseSkills = (skills) => {
+            if (typeof skills === 'string' && skills.trim()) {
+                try {
+                    const parsed = JSON.parse(skills);
+                    return Array.isArray(parsed) ? parsed.map(s => s.trim()).filter(Boolean) : [];
+                } catch {
+                    return skills.split(',').map(s => s.trim()).filter(Boolean)
+                }
+            }
+            return [];
+        }
 const create=async(req,res,next)=>{
 try {
-    const {title,description,salary,location}=req.body;
-    const userId=req.user._id;
-    const role=req.user.role;
-    const job=await jobService.create({title,description,salary,location},userId,role);
+    const {title,description,salary,location,skillsRequired}=req.body;
+    const profileId=req.profile._id;
+    const parsedSkills = parseSkills(skillsRequired);
+      
+    const job=await jobService.create({title,description,salary,location,skillsRequired:parsedSkills},profileId);
     res.status(201).json({message:"Job created successfully!",job,success:true});
 } catch (error) {
      console.log(error);
@@ -43,8 +55,8 @@ try {
 }
 const getJobsPostedByUser=async(req,res,next)=>{
 try {
-    const userId=req.user._id;
-     const jobs=await jobService.getJobsPostedByUser(userId);
+    const profileId=req.profile._id;
+     const jobs=await jobService.getJobsPostedByUser(profileId);
     res.status(200).json({message:"Job fetched successfully!",jobs,success:true});
 } catch (error) {
     console.log(error);
@@ -56,11 +68,11 @@ try {
 }
 const update=async(req,res,next)=>{
 try {
-    const {title,description,salary,location}=req.body;
-    const userId=req.user._id;
-    const role=req.user.role;
+    const {title,description,salary,location,skillsRequired}=req.body;
+    const profileId=req.profile._id;
     const jobId=req.params.id;
-    const job=await jobService.update({title,description,salary,location},jobId,userId,role);
+    const parsedSkills = parseSkills(skillsRequired);
+    const job=await jobService.update({title,description,salary,location,skillsRequired:parsedSkills},jobId,profileId);
     res.status(200).json({message:"Job updated successfully!",job,success:true});
 } catch (error) {
      console.log(error);
@@ -70,13 +82,39 @@ try {
     next(error);
 }
 }
-// const deleteJob=async(req,res,next)=>{
-
-// }
+const changeStatus=async(req,res,next)=>{
+    try {
+    const { isActive } = req.body;
+    const profileId=req.profile._id;
+    const jobId=req.params.id;
+    const job=await jobService.changeStatus({ isActive },jobId,profileId);
+    res.status(200).json({message:`Job is now ${isActive ? "active" : "closed"}`,job,success:true});
+} catch (error) {
+     console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
+}
+const deleteJob=async(req,res,next)=>{
+try {
+    const profileId=req.profile._id;
+    const jobId=req.params.id;
+    const deletedJob=await jobService.deleteJob(jobId,profileId);
+    res.status(200).json({message:"Job deleted successfully!",deletedJob,success:true});
+} catch (error) {
+     console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+}
+}
 // const searchJobs=async(req,res,next)=>{
 
 // }
 module.exports={
-   create,getAll,getOneJob,getJobsPostedByUser,update,
-//    deleteJob,searchJobs
+   create,getAll,getOneJob,getJobsPostedByUser,update,changeStatus,deleteJob,
+//    searchJobs
 }

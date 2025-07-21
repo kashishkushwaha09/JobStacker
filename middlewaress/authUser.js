@@ -1,5 +1,6 @@
 const jwt=require('jsonwebtoken');
 const User=require('../models/userModel');
+const Profile=require('../models/profileModel');
 const { AppError } = require('../utils/appError');
 
 const authenticateUser=async (req,res,next)=>{
@@ -16,10 +17,12 @@ const authenticateUser=async (req,res,next)=>{
            throw new AppError("Unauthorized",401); 
         }
         const user = await User.findById(decode.userId);
+        const profile=await Profile.findOne({userId});
         if(!user){
            throw new AppError("User not found",404);  
         }
-        req.user = user;
+        req.user=user;
+        req.profile=profile;
         next();
     } catch (error) {
         if(!(error instanceof AppError)){
