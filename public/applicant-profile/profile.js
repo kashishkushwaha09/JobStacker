@@ -463,8 +463,8 @@ for (let [key, value] of formData.entries()) {
     renderResume(profile.resumeUrl, isEditable);
     renderProfilePicture(profile.profilePicture,isEditable);
     // Toggle buttons
-    editBtn.classList.add('d-none');
-    saveBtn.classList.remove('d-none');
+    editBtn.classList.remove('d-none');
+    saveBtn.classList.add('d-none');
     loadProfile();
 
   } catch (error) {
