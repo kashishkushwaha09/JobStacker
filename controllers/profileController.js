@@ -31,8 +31,9 @@ const updateProfileApplicant = async (req, res, next) => {
                         throw new AppError("Required all experience fields",400);
                     }
                 })
+                updatedFields.experience = parsed;
             }
-            updatedFields.experience = parsed;
+            
         }
         if (education && typeof education === 'string' && education.trim()) {
             const parsed = JSON.parse(education);
@@ -42,8 +43,9 @@ const updateProfileApplicant = async (req, res, next) => {
                         throw new AppError("Required all education fields",400);
                     }
                 })
+                updatedFields.education = parsed;
             }
-            updatedFields.education = parsed;
+            
         }
         if(projects && typeof projects==='string' && projects.trim()){
             const parsed=JSON.parse(projects);
@@ -56,18 +58,24 @@ const updateProfileApplicant = async (req, res, next) => {
                     throw new AppError("techStack must be a non-empty array",400); 
                 }
                 })
+                updatedFields.projects = parsed;
             }
-             updatedFields.projects = parsed;
+             
         }
         if(req.files){
             const profileFile = req.files.profilePicture?.[0];
             const resumeFile = req.files.resume?.[0];
-            const profileDataUri=`data:${profileFile.mimetype};base64,${profileFile.buffer.toString('base64')}`;
-            const resumeDataUri=`data:${resumeFile.mimetype};base64,${resumeFile.buffer.toString('base64')}`;
-            const profileUpload=await uploadToCloudinary(profileDataUri,'image');
-            const resumeUpload=await uploadToCloudinary(resumeDataUri,'raw');
-            updatedFields.profilePicture=profileUpload.result.secure_url;
-            updatedFields.resumeUrl=resumeUpload.rawfileUrl;
+            if (profileFile) {
+    const profileDataUri = `data:${profileFile.mimetype};base64,${profileFile.buffer.toString('base64')}`;
+    const profileUpload = await uploadToCloudinary(profileDataUri, 'image');
+    updatedFields.profilePicture = profileUpload.result.secure_url;
+  }
+
+  if (resumeFile) {
+    const resumeDataUri = `data:${resumeFile.mimetype};base64,${resumeFile.buffer.toString('base64')}`;
+    const resumeUpload = await uploadToCloudinary(resumeDataUri, 'raw');
+    updatedFields.resumeUrl = resumeUpload.rawfileUrl;
+  }
         }
      const profile=await profileService.update(updatedFields,req.user._id);
      res.status(200).json({message:"Profile Updated successfully",profile,success:true});

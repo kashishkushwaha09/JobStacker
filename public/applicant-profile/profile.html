@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobStacker-Applicant Profile</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+  <!--Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-primary" href="#">JobStacker</a>
+
+  </div>
+</nav>
+
+  <!-- viewEditProfile.html -->
+<div class="container mt-5">
+  <h2>My Profile</h2>
+
+  <form id="profileForm">
+    <div id="profilePictureContainer" class=""></div>
+    <div class="mb-3">
+      <label for="name">Name</label>
+      <input type="text" id="name" class="form-control" disabled />
+    </div>
+
+    <div class="mb-3">
+      <label for="headline">Headline</label>
+      <input type="text" id="headline" class="form-control" disabled />
+    </div>
+    <div class="mb-3">
+      <label for="about">About</label>
+      <input type="text" id="about" class="form-control" disabled />
+    </div>
+    <div class="mb-3">
+      <label for="location">Location</label>
+      <input type="text" id="location" class="form-control" disabled />
+    </div>
+    <div class="mb-3">
+  <label for="skills">Skills</label>
+  <input type="text" id="skills" class="form-control" value="sql, nodejs, Reactjs, css" disabled />
+</div>
+    
+     <h4>Experience</h4>
+<div id="experienceContainer"></div>
+<button type="button" class="btn btn-sm btn-outline-success my-2" id="addExperienceBtn" disabled>➕ Add Experience</button>
+    <h4>Education</h4>
+<div id="educationContainer"></div>
+<button type="button" class="btn btn-sm btn-outline-success my-2" id="addEducationBtn" disabled>➕ Add Education</button>
+<h4>Projects</h4>
+<div id="projectContainer"></div>
+<button type="button" class="btn btn-sm btn-outline-success my-2" id="addProjectBtn" disabled>➕ Add Project</button>
+ <h4>Resume</h4>
+<div id="resumeContainer" class="mb-3"></div>
+    <button type="button" id="editBtn" class="btn btn-primary">Edit</button>
+    <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
+  </form>
+</div>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+  
+  <script src="profile.js"></script>
+</body>
+</html>

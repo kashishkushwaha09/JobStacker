@@ -18,14 +18,8 @@ async function loadProfile() {
     console.log(profile);
     nameSpan.innerText = profile.name || "Applicant";
 
-    profileInfo.innerHTML = `
-      <h5>Headline: ${profile.headline || "N/A"}</h5>
-      <p>Location: ${profile.location || "N/A"}</p>
-      <p>About: ${profile.about || "N/A"}</p>
-    `;
   } catch (err) {
     console.error("Error loading profile", err);
-    profileInfo.innerHTML = `<p class="text-danger">Failed to load profile.</p>`;
   }
 }
 
