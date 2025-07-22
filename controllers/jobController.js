@@ -2,6 +2,10 @@ const { AppError } = require("../utils/appError");
 const jobService=require('../services/jobService');
 
  const parseSkills = (skills) => {
+    
+      if (Array.isArray(skills)) {
+    return skills.map(s => s.trim()).filter(Boolean);
+  }
             if (typeof skills === 'string' && skills.trim()) {
                 try {
                     const parsed = JSON.parse(skills);
@@ -14,11 +18,29 @@ const jobService=require('../services/jobService');
         }
 const create=async(req,res,next)=>{
 try {
-    const {title,description,salary,location,skillsRequired}=req.body;
+    const {title,description,salary,location,skillsRequired, jobType,
+      experienceLevel,
+      applicationDeadline,
+      openings}=req.body;
     const profileId=req.profile._id;
     const parsedSkills = parseSkills(skillsRequired);
-      
-    const job=await jobService.create({title,description,salary,location,skillsRequired:parsedSkills},profileId);
+   
+    const jobFields = {
+      title,
+      description,
+      salary,
+      location,
+      skillsRequired: parsedSkills,
+      jobType,
+      experienceLevel,
+      applicationDeadline,
+      openings
+    };
+    if (applicationDeadline) {
+  jobFields.applicationDeadline = new Date(applicationDeadline);
+}
+
+    const job=await jobService.create(jobFields,profileId);
     res.status(201).json({message:"Job created successfully!",job,success:true});
 } catch (error) {
      console.log(error);

@@ -24,6 +24,25 @@ const jobValidation=[
     body("description").trim().notEmpty().withMessage('Name is required'),
     body("salary").trim().notEmpty().withMessage('salary is required'),
     body("location").trim().notEmpty().withMessage('location is required'),
+    body("jobType")
+    .optional()
+    .isIn(['Full-Time', 'Part-Time', 'Internship', 'Remote', 'Contract'])
+    .withMessage("Invalid job type"),
+
+  body("experienceLevel")
+    .optional()
+    .isIn(['Fresher', 'Junior', 'Mid-Level', 'Senior'])
+    .withMessage("Invalid experience level"),
+
+  body("applicationDeadline")
+    .optional()
+    .isISO8601()
+    .withMessage("Invalid date format (use YYYY-MM-DD)"),
+
+  body("openings")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Openings must be a positive integer")
     
 ]
     module.exports={

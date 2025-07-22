@@ -26,6 +26,23 @@ const jobSchema=new Schema({
    isActive: {
     type: Boolean,
     default: true
+  },
+   jobType: {
+    type: String,
+    enum: ['Full-Time', 'Part-Time', 'Internship', 'Remote', 'Contract'],
+    default: 'Full-Time'
+  },
+  experienceLevel: {
+    type: String,
+    enum: ['Fresher', 'Junior', 'Mid-Level', 'Senior'],
+    default: 'Fresher'
+  },
+  applicationDeadline: {
+    type: Date 
+  },
+   openings: {
+    type: Number,
+    default: 1
   }
 },{timestamps:true});
 
