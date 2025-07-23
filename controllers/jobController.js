@@ -90,11 +90,30 @@ try {
 }
 const update=async(req,res,next)=>{
 try {
-    const {title,description,salary,location,skillsRequired}=req.body;
+    const {title,description,salary,location,skillsRequired,jobType,
+      experienceLevel,
+      applicationDeadline,
+      openings}=req.body;
     const profileId=req.profile._id;
     const jobId=req.params.id;
     const parsedSkills = parseSkills(skillsRequired);
-    const job=await jobService.update({title,description,salary,location,skillsRequired:parsedSkills},jobId,profileId);
+     const updatedFields = {
+      title,
+      description,
+      salary,
+      location,
+      skillsRequired: parsedSkills,
+      jobType,
+      experienceLevel,
+      applicationDeadline: applicationDeadline ? new Date(applicationDeadline) : undefined,
+      openings
+    };
+      Object.keys(updatedFields).forEach((key) => {
+      if (updatedFields[key] === undefined || updatedFields[key] === null) {
+        delete updatedFields[key];
+      }
+    });
+    const job=await jobService.update(updatedFields,jobId,profileId);
     res.status(200).json({message:"Job updated successfully!",job,success:true});
 } catch (error) {
      console.log(error);

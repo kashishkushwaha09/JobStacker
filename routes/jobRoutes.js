@@ -6,7 +6,7 @@ const validateRequest=require('../middlewaress/validationRequest');
 const authenticateUser=require('../middlewaress/authUser');
 const isRecruiter=require('../middlewaress/checkRecruiter');
 router.post('/',jobValidation,validateRequest,authenticateUser,isRecruiter,jobController.create);
-router.put('/:id',authenticateUser,isRecruiter,jobController.update);
+router.patch('/:id',authenticateUser,isRecruiter,jobController.update);
 router.patch('/:id/status',authenticateUser,isRecruiter,jobController.changeStatus);
 router.delete('/:id',authenticateUser,isRecruiter,jobController.deleteJob);
 router.get('/',authenticateUser,jobController.getAll);

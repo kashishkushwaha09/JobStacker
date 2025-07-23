@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobStacker-Edit Job</title>
+
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+  <!--Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-primary" href="#">JobStacker</a>
+
+    
+    </div>
+  </div>
+</nav>
+<div class="container mt-5">
+    <h3 class="mb-4">Edit Job</h3>
+    <form id="editJobForm" class="border p-4 shadow-sm rounded">
+      <div class="mb-3">
+        <label for="title" class="form-label">Job Title</label>
+        <input type="text" class="form-control" id="title" required />
+      </div>
+
+      <div class="mb-3">
+        <label for="description" class="form-label">Job Description</label>
+        <textarea class="form-control" id="description" rows="4" required></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="salary" class="form-label">Salary</label>
+        <input type="text" class="form-control" id="salary" />
+      </div>
+
+      <div class="mb-3">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" />
+      </div>
+
+      <div class="mb-3">
+        <label for="skillsRequired" class="form-label">Skills (comma-separated)</label>
+        <input type="text" class="form-control" id="skillsRequired" />
+      </div>
+
+      <div class="mb-3">
+        <label for="jobType" class="form-label">Job Type</label>
+        <input type="text" class="form-control" id="jobType" />
+      </div>
+
+      <div class="mb-3">
+        <label for="experienceLevel" class="form-label">Experience Level</label>
+        <input type="text" class="form-control" id="experienceLevel" />
+      </div>
+
+      <div class="mb-3">
+        <label for="applicationDeadline" class="form-label">Application Deadline</label>
+        <input type="date" class="form-control" id="applicationDeadline" />
+      </div>
+
+      <div class="mb-3">
+        <label for="openings" class="form-label">Openings</label>
+        <input type="number" class="form-control" id="openings" />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update Job</button>
+    </form>
+  </div>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+  
+  <script src="edit-job.js"></script>
+</body>
+</html>

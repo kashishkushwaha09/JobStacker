@@ -15,7 +15,10 @@ try {
    if (!existedJob) {
       throw new AppError("Job not found or unauthorized", 404);
     }
-    const { title, description, salary, location,skillsRequired} = fields;
+    const { title, description, salary, location,skillsRequired,jobType,
+      experienceLevel,
+      applicationDeadline,
+      openings,} = fields;
  if (typeof title === 'string' && title.trim()) {
       existedJob.title = title.trim();
     }
@@ -31,9 +34,24 @@ try {
     if (typeof location === 'string' && location.trim()) {
       existedJob.location = location.trim();
     }
-     if(skillsRequired.length>0){
+     if(Array.isArray(skillsRequired) && skillsRequired.length>0){
       existedJob.skillsRequired=skillsRequired;
      }
+      if (typeof jobType === 'string' && jobType.trim()) {
+      existedJob.jobType = jobType.trim();
+    }
+
+    if (typeof experienceLevel === 'string' && experienceLevel.trim()) {
+      existedJob.experienceLevel = experienceLevel.trim();
+    }
+
+    if (applicationDeadline) {
+      existedJob.applicationDeadline = new Date(applicationDeadline);
+    }
+
+    if (!isNaN(openings)) {
+      existedJob.openings = openings;
+    }
    await existedJob.save();
    return existedJob;
 } catch (error) {
