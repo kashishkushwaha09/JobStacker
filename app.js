@@ -2,6 +2,8 @@ require('dotenv').config();
 const express=require('express');
 const path=require("path");
 const app=express();
+const cron = require('node-cron');
+const deactivateExpiredJobs = require('./utils/deactivateExpiredJobs');
 const mongoose=require('mongoose');
 const mongoDbURL=process.env.MONGO_URL;
 const errorMiddleware=require('./middlewaress/errorHandler');
@@ -26,6 +28,11 @@ const connectToMongo=async()=>{
         app.listen(3000,()=>{
             console.log("app listening on the localhost 3000 successfully!");
         })
+        // Run every minute
+cron.schedule('* * * * *', () => {
+  console.log('Running scheduled job: deactivateExpiredJobs');
+  deactivateExpiredJobs();
+});
     } catch (error) {
         console.error(error);
         console.error("Mongoose connection error!");
