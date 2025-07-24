@@ -47,7 +47,14 @@ const getApplicationsByJob=async(jobId,profileId)=>{
     }
 
     const applications = await Application.find({ job: jobId })
-      .populate('applicant', 'name headline location skills');
+    .populate({
+    path: 'applicant',
+    select: 'name headline location resumeUrl userId',
+    populate: {
+      path: 'userId',
+      select: 'email'
+    }
+  });
       if(!applications) throw new AppError("applications not found",404);
      return applications;
     } catch (error) {
@@ -59,7 +66,7 @@ const getApplicationsByJob=async(jobId,profileId)=>{
 }
 const updateApplicationStatus=async(appId,profileId,status)=>{
     try {
-         if (!["accepted", "rejected"].includes(status)) {
+         if (!["accepted", "rejected","pending"].includes(status)) {
       throw new AppError("Invalid status", 400);
     }
 

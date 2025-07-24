@@ -67,6 +67,8 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
               </p>
               <button class="btn btn-primary btn-sm me-2" onclick="editJob('${job._id}')">Edit</button>
               <button class="btn btn-danger btn-sm" onclick="deleteJob('${job._id}')">Delete</button>
+              <a href="/recruiter-applications/recruiter-applications.html?jobId=${job._id}" class="btn btn-outline-secondary btn-sm fw-medium">View Applications</a>
+
             </div>
           </div>
         `;

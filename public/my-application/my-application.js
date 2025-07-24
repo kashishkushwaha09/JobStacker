@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     const applications = res.data.applications;
     const container = document.getElementById('applicationsList');
-
+    console.log(applications);
     if (!applications.length) {
       container.innerHTML = `<p class="text-muted">You haven’t applied for any jobs yet.</p>`;
       return;
@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     applications.forEach(app => {
       const job = app.job;
+     console.log(job._id)
       const div = document.createElement('div');
       div.className = 'col-md-6';
 
@@ -59,9 +60,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         <div class="card shadow-sm">
           <div class="card-body">
             <h5 class="card-title">${job.title}</h5>
-            <p class="card-text"><strong>Location:</strong> ${job.location}</p>
-            <p class="card-text"><strong>Status:</strong> ${app.status}</p>
-            <p class="card-text"><strong>Applied on:</strong> ${new Date(app.createdAt).toLocaleDateString()}</p>
+            <p class="card-text mb-0"><strong>Location:</strong> ${job.location}</p>
+            <p class="card-text mb-0"><strong>MatchedSkills:</strong> ${app.matchedSkills.join(',')}</p>
+            <p class="card-text mb-0"><strong>MissingSkills:</strong> ${app.missingSkills.join(',')}</p>
+            <p class="card-text mb-0"><strong>MatchedScore:</strong> ${app.matchScore}</p>
+            <p class="card-text mb-0"><strong>Status:</strong> ${app.status}</p>
+            <p class="card-text mb-2"><strong>Applied on:</strong> ${new Date(app.createdAt).toLocaleDateString()}</p>
+            <button class="btn btn-sm btn-outline-primary" onclick="viewDetails('${job._id}')">View Details</button>
           </div>
         </div>
       `;
@@ -74,3 +79,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     alert('Failed to load applications.');
   }
 });
+function viewDetails(jobId) {
+  window.location.href = `/job-details/job-details.html?id=${jobId}`;
+}
