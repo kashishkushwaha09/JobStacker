@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JobStacker-Recruiter Dashboard</title>
+  <title>JobStacker-myApplications</title>
 
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
@@ -18,18 +18,18 @@
 
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
-          <li class="nav-item">
-          <a class="nav-link fw-semibold text-success" href="/create-job/create-job.html">
-            ➕ Post Job
-          </a>
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="/applicant-dashboard/dashboard.html">Dashboard</a>
         </li>
-         
+         <li class="nav-item">
+          <a class="nav-link fw-semibold" href="/my-application/my-application.html">My Applications</a>
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle fw-semibold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span id="applicantName">Recruiter</span>
+            <span id="applicantName">Applicant</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="/recruiter-profile/profile.html">View Profile</a></li>
+            <li><a class="dropdown-item" href="/applicant-profile/profile.html">View Profile</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><button class="dropdown-item text-danger" id="logoutBtn">Logout</button></li>
           </ul>
@@ -39,16 +39,16 @@
   </div>
 </nav>
 
- <div class="container mt-5">
-  <h2 class="mb-4">My Posted Jobs</h2>
-  <div id="jobsContainer" class="row row-cols-1 row-cols-md-2 g-4">
-    <!-- Jobs will be inserted here -->
+ <div class="container mt-4">
+  <h2 class="mb-4">My Applications</h2>
+  <div id="applicationsList" class="row gy-3">
+    <!-- Applications will be shown here -->
   </div>
 </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
   
-  <script src="recruiterDashboard.js"></script>
+  <script src="my-application.js"></script>
 </body>
 </html>
