@@ -2,15 +2,6 @@ const applicationService=require('../services/applicationService');
 const { AppError } = require('../utils/appError');
 
 
-
-// See their applications
-// Recruiters can:
-
-// See all applications for a specific job
-
-// Update application status
-// Apply to a job
-
 const applyToJob=async(req,res,next)=>{
 try {
     const jobId=req.body.jobId;

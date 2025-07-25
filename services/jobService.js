@@ -100,17 +100,16 @@ const getJobsPostedByUser=async(profileId)=>{
     throw new AppError(error.message,500);
 } 
 }
-const changeStatus=async(status,jobId,profileId)=>{
+const changeStatus=async(jobId,profileId)=>{
  try {
-  const {isActive}=status;
-   const job=await Job.findOneAndUpdate(
-   { _id:jobId, postedBy:profileId },
-  {isActive},
-  { new: true }
-   );
+
+   const job=await Job.findOne(
+   { _id:jobId, postedBy:profileId });
    if (!job) {
   throw new AppError("Jobs not found", 404);
 }
+ job.isActive = !job.isActive;
+    await job.save();
    return job;
 } catch (error) {
     throw new AppError(error.message,500);

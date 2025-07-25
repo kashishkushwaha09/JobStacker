@@ -49,6 +49,15 @@ projects: {
   ],
   default: [],
 },
+// Premium Features for Applicants
+hasPremiumAccess: {
+  type: Boolean,
+  default: false,
+},
+profileViewCount: {
+  type: Number,
+  default: 0,
+},
   // Recruiter-specific fields
   companyName:String,
   companyAbout:String,

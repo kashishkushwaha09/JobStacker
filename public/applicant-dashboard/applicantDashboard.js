@@ -51,6 +51,9 @@ const getAllJobs = async () => {
     }
 
     jobs.forEach(job => {
+        const deadline = new Date(job.applicationDeadline);
+        const now = new Date();
+        const isOpen = job.isActive && deadline > now;
       const card = document.createElement("div");
       card.className = "col";
 
@@ -61,7 +64,9 @@ const getAllJobs = async () => {
             <p class="card-text mb-1"><strong>Company:</strong> ${job.postedBy?.companyName || 'Unknown'}</p>
             <p class="card-text mb-1"><strong>Location:</strong> ${job.location}</p>
             <p class="card-text mb-1"><strong>Type:</strong> ${job.jobType}</p>
-            <p class="card-text mb-2"><strong>Deadline:</strong> ${new Date(job.applicationDeadline).toLocaleDateString()}</p>
+            <p class="card-text mb-2"><strong>Status:</strong> ${isOpen
+  ? `🟢 Open till: ${deadline.toDateString()}`
+  : `🔴 Applications Closed`}</p>
             <button class="btn btn-sm btn-primary" onclick="viewDetails('${job._id}')">View Details</button>
           </div>
         </div>

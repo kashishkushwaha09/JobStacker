@@ -125,11 +125,10 @@ try {
 }
 const changeStatus=async(req,res,next)=>{
     try {
-    const { isActive } = req.body;
     const profileId=req.profile._id;
     const jobId=req.params.id;
-    const job=await jobService.changeStatus({ isActive },jobId,profileId);
-    res.status(200).json({message:`Job is now ${isActive ? "active" : "closed"}`,job,success:true});
+    const job=await jobService.changeStatus(jobId,profileId);
+    res.status(200).json({message:`Job is now ${job.isActive ? "active" : "closed"}`,job,success:true});
 } catch (error) {
      console.log(error);
     if (!(error instanceof AppError)) {
@@ -138,6 +137,7 @@ const changeStatus=async(req,res,next)=>{
     next(error);
 }
 }
+
 const deleteJob=async(req,res,next)=>{
 try {
     const profileId=req.profile._id;

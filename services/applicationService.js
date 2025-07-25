@@ -4,7 +4,7 @@ const jobService=require('../services/jobService');
 const apply=async(jobId,profile)=>{
 try {
     const job=await jobService.getOne(jobId);
-    if (!job.isActive) {
+    if (!job.isActive|| new Date() > new Date(job.applicationDeadline)) {
   throw new AppError("This job is no longer accepting applications", 400);
 }
     const jobSkills = job.skillsRequired.map(skill => skill.toLowerCase());

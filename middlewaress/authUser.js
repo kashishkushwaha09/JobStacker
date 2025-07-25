@@ -5,7 +5,7 @@ const { AppError } = require('../utils/appError');
 
 const authenticateUser=async (req,res,next)=>{
     const authHeader=req.headers.authorization;
-   
+   console.log("authHeader",authHeader);
     if(!authHeader || !authHeader.startsWith('Bearer ')){
      throw new AppError("Unauthorized",401);
     }
@@ -16,6 +16,7 @@ const authenticateUser=async (req,res,next)=>{
         if(!userId){
            throw new AppError("Unauthorized",401); 
         }
+        console.log(userId);
         const user = await User.findById(decode.userId);
         const profile=await Profile.findOne({userId});
         if(!user){

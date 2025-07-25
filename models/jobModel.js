@@ -43,7 +43,11 @@ const jobSchema=new Schema({
    openings: {
     type: Number,
     default: 1
-  }
+  },
+  isFeatured: {
+  type: Boolean,
+  default: false,
+}
 },{timestamps:true});
 
 module.exports=mongoose.model("Job",jobSchema);

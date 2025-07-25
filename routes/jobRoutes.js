@@ -8,6 +8,7 @@ const isRecruiter=require('../middlewaress/checkRecruiter');
 router.post('/',jobValidation,validateRequest,authenticateUser,isRecruiter,jobController.create);
 router.patch('/:id',authenticateUser,isRecruiter,jobController.update);
 router.patch('/:id/status',authenticateUser,isRecruiter,jobController.changeStatus);
+
 router.delete('/:id',authenticateUser,isRecruiter,jobController.deleteJob);
 router.get('/',authenticateUser,jobController.getAll);
 router.get('/postedByRecruiter',authenticateUser,jobController.getJobsPostedByUser);

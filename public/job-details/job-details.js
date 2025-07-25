@@ -16,6 +16,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
     const job = res.data.job;
     console.log(job);
+     const deadline = new Date(job.applicationDeadline);
+        const now = new Date();
+        const isOpen = job.isActive && deadline > now;
     const container = document.getElementById("jobDetailsContainer");
     // container.className = "container mt-5";
 
@@ -36,7 +39,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         <button class="btn btn-primary mt-3" id="applyBtn">Apply Now</button>
       
     `;
-
+   if(!isOpen){
+    const applyBtn = document.getElementById('applyBtn');
+     applyBtn.disabled = true;
+        applyBtn.innerText = 'Application Closed';
+        applyBtn.classList.add('btn-danger');
+        applyBtn.classList.remove('btn-primary');
+   }
     // document.body.appendChild(container);
     axios.get('/api/application',{
       headers: {

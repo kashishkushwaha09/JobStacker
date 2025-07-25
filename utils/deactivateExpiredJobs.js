@@ -10,3 +10,4 @@ const deactivateExpiredJobs = async () => {
 };
 
 module.exports=deactivateExpiredJobs;
+// Or create a cron job or background cleanup script to mark stale pending orders as failed after 1 hour or so
