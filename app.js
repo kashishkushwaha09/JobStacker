@@ -13,6 +13,7 @@ const postRoute=require('./routes/postRoutes');
 const jobRoute=require('./routes/jobRoutes');
 const applicationRoute=require('./routes/applicationRoutes');
 const orderRoute=require('./routes/orderRoutes');
+const savedJobsRoute=require('./routes/savedJobsRoutes');
 app.use(express.static(path.join(__dirname, 'public')));
 app.use("/uploads/pdfs", express.static(path.join(__dirname, "uploads/pdfs")));
 
@@ -24,6 +25,7 @@ app.use('/api/post',postRoute);
 app.use('/api/job',jobRoute);
 app.use('/api/application',applicationRoute);
 app.use('/api/order',orderRoute);
+app.use('/api/saved-jobs',savedJobsRoute);
 app.use(errorMiddleware);
 const connectToMongo=async()=>{
     try {

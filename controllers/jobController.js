@@ -52,7 +52,8 @@ try {
 }
 const getAll=async(req,res,next)=>{
 try {
-    const jobs=await jobService.getAll();
+    const profileId=req.profile._id;
+    const jobs=await jobService.getAll(profileId);
     res.status(200).json({message:"Jobs fetched successfully!",jobs,success:true});
 } catch (error) {
     console.log(error);

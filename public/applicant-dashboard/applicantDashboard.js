@@ -54,14 +54,15 @@ const getAllJobs = async () => {
       jobsContainer.innerHTML = `<p>No jobs available at the moment.</p>`;
       return;
     }
-
+     console.log(jobs)
     jobs.forEach(job => {
         const deadline = new Date(job.applicationDeadline);
         const now = new Date();
         const isOpen = job.isActive && deadline > now;
       const card = document.createElement("div");
       card.className = "col";
-
+     const isDisabled = job.isSaved ? "disabled" : "";
+     const btnLabel = job.isSaved ? "Saved" : "Save";
       card.innerHTML = `
         <div class="card shadow-sm border rounded">
           <div class="card-body">
@@ -73,6 +74,9 @@ const getAllJobs = async () => {
   ? `🟢 Open till: ${deadline.toDateString()}`
   : `🔴 Applications Closed`}</p>
             <button class="btn btn-sm btn-primary" onclick="viewDetails('${job._id}')">View Details</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="saveJob('${job._id}')"
+            ${isDisabled}> ${btnLabel}</button>
+
           </div>
         </div>
       `;
@@ -150,3 +154,16 @@ getAllJobs();
       alert("Something went wrong while initiating payment.");
     }
   });
+  async function saveJob(jobId) {
+  try {
+    await axios.post(`/api/saved-jobs/save/${jobId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    alert("Job saved!");
+  } catch (err) {
+    alert(err.response?.data?.message || "Error saving job");
+  }
+}
+

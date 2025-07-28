@@ -2,6 +2,7 @@ const { AppError } = require('../utils/appError');
 const Job=require('../models/jobModel');
 const Application=require('../models/applicationModel');
 const Profile=require('../models/profileModel');
+const SavedJob=require('../models/savedJobModel');
 const create=async(fields,profileId)=>{
 try {
   const profile = await Profile.findById(profileId);
@@ -82,10 +83,21 @@ const deleteJob=async(jobId,profileId)=>{
           throw error;
     }
 }
-const getAll=async()=>{
+const getAll=async(profileId)=>{
     try {
    const jobs=await Job.find().populate('postedBy','name companyName companyAbout companyLocation').sort({updatedAt:-1}).lean();
-   return jobs;
+   const savedJobs = await SavedJob.find({ applicant: profileId }).select("job");
+   console.log("savedJobs",savedJobs);
+
+   const savedJobIds = new Set(savedJobs.map((sj) => sj.job.toString()));
+   console.log("savedJobIds",savedJobIds);
+
+    const jobsWithSaveStatus = jobs.map((job) => ({
+      ...job,
+      isSaved: savedJobIds.has(job._id.toString())
+    }));
+
+   return jobsWithSaveStatus;
 } catch (error) {
     throw new AppError(error.message,500);
 }
@@ -123,6 +135,7 @@ const getJobsPostedByUser=async(profileId)=>{
    if (!jobs) {
   throw new AppError("Jobs not found", 404);
 }
+
    return jobs;
 } catch (error) {
      console.log(error);
