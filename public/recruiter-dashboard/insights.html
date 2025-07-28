@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JobStacker-Applicant Dashboard</title>
+  <title>JobStacker-Recruiter Dashboard</title>
 
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+
 </head>
 <body>
   <!--Navbar -->
@@ -19,25 +21,32 @@
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link fw-semibold" href="/applicant-dashboard/dashboard.html">Dashboard</a>
+          <a class="nav-link fw-semibold" href="/recruiter-dashboard/dashboard.html">Dashboard</a>
         </li>
-         <li class="nav-item">
-          <a class="nav-link fw-semibold" href="/my-application/my-application.html">My Applications</a>
+        <li>
+          <a href="/recruiter-dashboard/insights.html" class="nav-link fw-semibold">
+  📊 View Job Insights
+</a>
         </li>
-          <!--Buy Premium Button -->
+          <li class="nav-item">
+          <a class="nav-link fw-semibold text-success" href="/create-job/create-job.html">
+            ➕ Post Job
+          </a>
+        </li>
+                  <!--Buy Premium Button -->
   <li class="nav-item">
     <button class="btn btn-warning fw-semibold ms-3" id="buyPremiumBtn">Buy Premium</button>
   </li>
-    <!-- Premium Badge-->
+   <!-- Premium Badge-->
   <li class="nav-item" id="premiumBadgeContainer" style="display: none;">
     <span class="btn btn-success text-light fw-semibold ms-3">⭐ Premium</span>
   </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle fw-semibold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span id="applicantName">Applicant</span>
+            <span id="applicantName">Recruiter</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="/applicant-profile/profile.html">View Profile</a></li>
+            <li><a class="dropdown-item" href="/recruiter-profile/profile.html">View Profile</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><button class="dropdown-item text-danger" id="logoutBtn">Logout</button></li>
           </ul>
@@ -47,17 +56,22 @@
   </div>
 </nav>
 
- <!-- Job List Section -->
-<div class="container mt-5">
-  <h2 class="mb-4">Browse All Jobs</h2>
-  <div id="jobsContainer" class="row row-cols-1 row-cols-md-2 g-4">
-    <!-- Jobs will be rendered here -->
+ <div class="container mt-5">
+    <div class="d-flex">
+        <h2 class="mb-4 mx-2">Insights for Your Posted Jobs </h2>
+  <div class="d-flex justify-content-end mb-3">
+  <button class="btn btn-success" onclick="downloadInsightsCSV()">Download Insights CSV</button>
+</div>
+    </div>
+  
+  <div id="insightsContainer" class="row row-cols-1 row-cols-md-2 g-4">
+    <!-- insights will be inserted here -->
   </div>
 </div>
   
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
   
-  <script src="applicantDashboard.js"></script>
+  <script src="insights.js"></script>
 </body>
 </html>

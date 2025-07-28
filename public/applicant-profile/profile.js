@@ -7,9 +7,59 @@ let experienceCount = 0;
 let educationCount=0;
 let projectCount=0;
 let isEditable = false;
+let insightsBtn=document.getElementById('insights');
+let profileViews=document.getElementById('profileViews');
+let addExperienceBtn=document.getElementById('addExperienceBtn');
+let addEducationBtn=document.getElementById('addEducationBtn');
+let addProjectBtn=document.getElementById('addProjectBtn');
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
 if (!token) {
   window.location.href = "/login.html"; 
 }
+if(id){
+  insightsBtn.style.display='none';
+  profileViews.style.display='none';
+  addExperienceBtn.style.display='none';
+  addEducationBtn.style.display='none';
+  addProjectBtn.style.display='none';
+  editBtn.style.display='none';
+  saveBtn.style.display='none';
+}
+// const insightData = /* get from backend API */;
+
+// const insightHtml = `
+//   <ul class="list-group">
+//     <li class="list-group-item">✅ Total Applications: <strong>${insightData.totalApplied}</strong></li>
+//     <li class="list-group-item">👁️ Profile Views: <strong>${insightData.totalViewed}</strong></li>
+//     <li class="list-group-item">📄 Resume Downloads: <strong>${insightData.totalDownloads}</strong></li>
+//     <li class="list-group-item text-success">✔️ Accepted: <strong>${insightData.totalAccepted}</strong></li>
+//     <li class="list-group-item text-danger">❌ Rejected: <strong>${insightData.totalRejected}</strong></li>
+//     <li class="list-group-item text-warning">⏳ Pending: <strong>${insightData.totalPending}</strong></li>
+//   </ul>
+// `;
+
+// document.getElementById("insightBody").innerHTML = insightHtml;
+async function loadInsights() {
+  try {
+    const res = await axios.get("/api/application/insights", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const { insights } = res.data;
+    console.log(res.data);
+    document.getElementById("totalApplications").textContent = insights.total || 0;
+    document.getElementById("acceptedApplications").textContent = insights.accepted || 0;
+    document.getElementById("rejectedApplications").textContent = insights.rejected || 0;
+    document.getElementById("pendingApplications").textContent = insights.pending || 0;
+    document.getElementById("resumeDownloaded").textContent=profile.resumeDownloadCount;
+  } catch (err) {
+    console.error("Failed to load insights", err);
+  }
+}
+
 
 function renderExperience(experienceArray){
     experienceCount =experienceArray.length;
@@ -107,7 +157,9 @@ function renderProjects(projects) {
     projectCount=projects.length;
   const container = document.getElementById("projectContainer");
   container.innerHTML = ""; // Clear previous content
-
+ // <a href="${resumeUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
+          //   📄 View
+          // </a>
   projects.forEach((project, index) => {
     const html = `
       <div class="project-entry border rounded p-2 mb-3">
@@ -144,21 +196,50 @@ function renderProjects(projects) {
     container.insertAdjacentHTML("beforeend", html);
   });
 }
+ async function downloadResume(event) {
+   event.preventDefault();
+    try {
+    
+      const response = await axios.get(`/api/profile/download-resume/${profile._id}`, {
+        responseType: "blob", // 👈 very important to receive binary data
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
+      const blob = new Blob([response.data]);
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${profile.name}_resume.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error.response?.data || error.message);
+      alert("Failed to download resume. Please try again.");
+    }
+  }
 function renderResume(resumeUrl, isEditable = false) {
   const container = document.getElementById("resumeContainer");
   if (!container) return;
-
+  console.log(profile)
+const filename = resumeUrl.split("/").pop(); // "1753676846953_degree.pdf"
+const cleanName = filename.split("_").slice(1).join("_"); // "degree.pdf"
   const html = `
     <div class="mb-3">
       ${
         resumeUrl
           ? `
         <div class="d-flex gap-2 mb-2">
-          <a href="${resumeUrl}" class="btn btn-outline-primary btn-sm">
-            📄 View
-          </a>
-        </div>
+        <a href="${resumeUrl}" target="_blank" class="btn btn-outline-primary btn-sm" >
+  View Resume ${cleanName}
+</a>
+<button  class="btn btn-outline-success btn-sm" onclick="downloadResume(event)">Download Resume</button>
+
+      </div>
         `
           : `<p class="text-muted">No resume uploaded</p>`
       }
@@ -199,15 +280,36 @@ function renderProfilePicture(profilePictureUrl, isEditable = false){
 
 async function loadProfile() {
   try {
-    const res = await axios.get("/api/profile/me", {
+ 
+   let res;
+   if(id){
+    res = await axios.get(`/api/profile/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+   }else{
+    res = await axios.get("/api/profile/me", {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
 
+   }
+     
     profile = res.data.profile;
     console.log(profile);
    
+    if (profile.hasPremiumAccess && !id) {
+      const viewsDiv = document.getElementById("profileViews");
+      if (viewsDiv) {
+        viewsDiv.textContent = `${profile.profileViewCount} recruiters viewed your profile`;
+      }
+       if (insightsBtn) {
+    // insightsBtn.style.display = "inline-block"; 
+    insightsBtn.classList.remove("d-none");
+  }
+    }
     document.getElementById("name").value = profile.name || "";
     document.getElementById("headline").value = profile.headline || "";
     document.getElementById("about").value = profile.about || "";
@@ -225,6 +327,10 @@ async function loadProfile() {
 
 loadProfile();
 
+if(!id){
+  insightsBtn.addEventListener('click', () => {
+  loadInsights();
+});
 editBtn.addEventListener('click', () => {
     isEditable=true;
     // Enable all input, select, textarea fields
@@ -242,7 +348,7 @@ editBtn.addEventListener('click', () => {
     saveBtn.classList.remove('d-none');
   });
 
-  document.getElementById('addExperienceBtn').addEventListener('click', () => {
+  addExperienceBtn.addEventListener('click', () => {
   const container = document.getElementById("experienceContainer");
 
   const html = `
@@ -290,7 +396,7 @@ editBtn.addEventListener('click', () => {
   container.insertAdjacentHTML("beforeend", html);
   experienceCount++;
 });
-document.getElementById('addEducationBtn').addEventListener('click', () => {
+addEducationBtn.addEventListener('click', () => {
   const container = document.getElementById("educationContainer");
 
   const html = `
@@ -337,7 +443,7 @@ document.getElementById('addEducationBtn').addEventListener('click', () => {
   container.insertAdjacentHTML("beforeend", html);
   educationCount++;
 });
-document.getElementById('addProjectBtn').addEventListener('click', () => {
+addProjectBtn.addEventListener('click', () => {
   const container = document.getElementById("projectContainer");
 
   const html = `
@@ -457,9 +563,9 @@ for (let [key, value] of formData.entries()) {
     inputs.forEach(input => {
       input.disabled = true;
     });
-    document.getElementById('addExperienceBtn').disabled = true;
-    document.getElementById('addEducationBtn').disabled = true;
-    document.getElementById('addProjectBtn').disabled = true;
+    addExperienceBtn.disabled = true;
+    addEducationBtn.disabled = true;
+    addProjectBtn.disabled = true;
     renderResume(profile.resumeUrl, isEditable);
     renderProfilePicture(profile.profilePicture,isEditable);
     // Toggle buttons
@@ -476,3 +582,5 @@ for (let [key, value] of formData.entries()) {
   }
 });
 
+
+}

@@ -1,6 +1,30 @@
 const { AppError } = require("../utils/appError");
 const Application=require('../models/applicationModel');
 const jobService=require('../services/jobService');
+const getInsights=async(applicantId)=>{
+  try {
+    const applications = await Application.find({ applicant: applicantId });
+    if(!applications){
+      throw new AppError("Applications not found",404);
+    }
+        const insights = {
+          total: applications.length,
+          accepted: 0,
+          rejected: 0,
+          pending: 0,
+        };
+    
+        applications.forEach(app => {
+          insights[app.status] = (insights[app.status] || 0) + 1;
+        });
+    return insights;
+  } catch (error) {
+     if(!(error instanceof AppError)){
+            error=new AppError(error.message,500);
+        }
+        throw error; 
+  }
+}
 const apply=async(jobId,profile)=>{
 try {
     const job=await jobService.getOne(jobId);
@@ -49,12 +73,12 @@ const getApplicationsByJob=async(jobId,profileId)=>{
     const applications = await Application.find({ job: jobId })
     .populate({
     path: 'applicant',
-    select: 'name headline location resumeUrl userId',
+    select: 'name headline location userId hasPremiumAccess',
     populate: {
       path: 'userId',
       select: 'email'
     }
-  });
+  }).sort({ 'applicant.hasPremiumAccess': -1, createdAt: 1,matchScore: -1  });
       if(!applications) throw new AppError("applications not found",404);
      return applications;
     } catch (error) {
@@ -89,5 +113,5 @@ const updateApplicationStatus=async(appId,profileId,status)=>{
     }
 }
 module.exports={
-    apply,getMyApplications,getApplicationsByJob,updateApplicationStatus
+    getInsights,apply,getMyApplications,getApplicationsByJob,updateApplicationStatus
 }

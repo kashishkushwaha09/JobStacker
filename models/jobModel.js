@@ -47,6 +47,11 @@ const jobSchema=new Schema({
   isFeatured: {
   type: Boolean,
   default: false,
+},
+viewedBy: [{ type: Schema.Types.ObjectId, ref: "Profile" }],
+views: {
+  type: Number,
+  default: 0
 }
 },{timestamps:true});
 

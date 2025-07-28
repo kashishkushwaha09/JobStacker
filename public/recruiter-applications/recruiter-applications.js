@@ -60,14 +60,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       div.innerHTML = `
   <div class="card shadow-sm">
     <div class="card-body">
-      <h5 class="mb-2">${app.applicant.name}</h5>
+      <h5 class="mb-2">
+      <a href="/applicant-profile/profile.html?id=${app.applicant._id}" class="text-decoration-none fw-bold text-dark bg-primary-subtle p-1 rounded">
+    ${app.applicant.name}
+  </a>
+       ${app.applicant.hasPremiumAccess ? '<span class="badge bg-warning text-dark ms-2">Premium</span>' : ''}
+       </h5>
       <p class="mb-1">Headline: ${app.applicant.headline}</p>
       <p class="mb-1">Location: ${app.applicant.location}</p>
       <p class="mb-1">Email: ${app.applicant.userId.email}</p>
       <p class="mb-1">Matched Skills: ${app.matchedSkills.join(', ')}</p>
       <p class="mb-1">Missing Skills: ${app.missingSkills.join(', ')}</p>
       <p class="mb-1">Matched Score: ${app.matchScore} %</p>
-      ${app.applicant.resumeUrl ? `<a class="mb-1 d-block" href="${app.applicant.resumeUrl}">📄 View Resume</a>` : ''}
       <p class="mb-2">Status: <strong>${app.status}</strong></p>
 
       <select class="form-select status-select" data-id="${app._id}">
@@ -115,3 +119,57 @@ document.addEventListener('DOMContentLoaded', async () => {
     container.innerHTML = "<p class='text-danger'>Failed to load applications.</p>";
   }
 });
+// buyPremium feature
+ const buyPremiumBtn = document.getElementById("buyPremiumBtn");
+
+  buyPremiumBtn.addEventListener("click", async () => {
+    try {
+      const response = await axios.post("/api/order/create-order", {},{
+         headers: {
+        Authorization: `Bearer ${token}`
+      }
+      });
+
+      const order = response.data.order;
+
+      // Step 2: Configure Razorpay checkout options
+      const options = {
+        key: process.env.RAZORPAY_KEY_ID, // Replace with actual Razorpay Key ID
+        amount: order.amount, // in paise
+        currency: "INR",
+        name: "JobStacker Premium",
+        description: "Upgrade to Premium",
+        order_id: order.id,
+
+        handler: async function (response) {
+          try {
+            const verifyRes = await axios.post("/api/order/verify-payment", {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (verifyRes.data.success) {
+              alert("Premium Activated!");
+              location.reload();
+            } else {
+              alert("Payment verification failed.");
+            }
+          } catch (err) {
+            console.error("Verification Error:", err);
+            alert("Something went wrong while verifying payment.");
+          }
+        },
+
+        theme: {
+          color: "#6777ef"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Order Creation Error:", err);
+      alert("Something went wrong while initiating payment.");
+    }
+  });

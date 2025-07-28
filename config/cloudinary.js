@@ -1,51 +1,31 @@
-const cloudinary = require('cloudinary').v2;
-const { AppError } = require('../utils/appError');
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 
-
- // Configuration
-    cloudinary.config({ 
-        cloud_name:process.env.CLOUDINARY_NAME, 
-        api_key:process.env.CLOUDINARY_APIKEY, 
-        api_secret:process.env.CLOUDINARY_APISECRET // Click 'View API Keys' above to copy your API secret
-    });
-async function uploadToCloudinary(fileURI,fileType = 'auto', publicId = null) {
-        try {
-             // Upload an image
-     const result= await cloudinary.uploader
-       .upload(
-           fileURI, {
-               folder: 'user_uploads',
-               resource_type:fileType,
-               public_id:publicId || undefined,
-           }
-       );
-   
-    // Optimize delivery by resizing and applying auto-format and auto-quality
-    const optimizeUrl = cloudinary.url(result.public_id, {
-        fetch_format: 'auto',
-        quality: 'auto'
-    });
-    const rawfileUrl = cloudinary.url(result.public_id, {
-  resource_type: 'raw',
-  flags: 'attachment:false',
-  folder: 'user_uploads',
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_APIKEY,
+  api_secret: process.env.CLOUDINARY_APISECRET,
 });
 
-  
-    
-    // Transform the image: auto-crop to square aspect_ratio
-    const autoCropUrl = cloudinary.url(result.public_id, {
-        crop: 'auto',
-        gravity: 'auto',
-        width: 500,
-        height: 500,
+const uploadToCloudinary = async (buffer, folder, publicIdWithExt) => {
+  const extension = publicIdWithExt.split(".").pop(); // e.g. "png"
+  const publicId = publicIdWithExt.replace(/\.[^/.]+$/, ""); // e.g. "avatar"
+
+  const uploadOptions = {
+    resource_type: "image",
+    folder,
+    public_id: publicId,
+    format: extension,
+    type: "upload", // public asset
+  };
+
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(uploadOptions, (error, result) => {
+      if (error) return reject(error);
+      resolve(result.secure_url);
     });
-     
-    return {result,rawfileUrl}; 
-        } catch (error) {
-            console.log(error);
-             throw new AppError('Cloudinary upload failed',500);
-        }
-   
-}
-module.exports={uploadToCloudinary};
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+
+module.exports = uploadToCloudinary;

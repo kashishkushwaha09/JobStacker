@@ -1,5 +1,6 @@
 const token = localStorage.getItem("token");
-
+const buyPremiumBtn = document.getElementById("buyPremiumBtn");
+const premiumBadgeContainer=document.getElementById("premiumBadgeContainer");
 if (!token) {
     window.location.href = "/login.html";
 }
@@ -17,7 +18,10 @@ async function loadProfile() {
         const profile = res.data.profile;
         console.log(profile);
         nameSpan.innerText = profile.name || "Recruiter";
-
+    if(profile.hasPremiumAccess){
+        buyPremiumBtn.style.display = "none";
+        premiumBadgeContainer.style.display = "inline-block";
+    }
     } catch (err) {
         console.error("Error loading profile", err);
     }
@@ -60,7 +64,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             jobCard.innerHTML = `
           <div class="card h-100 shadow-sm">
             <div class="card-body">
-              <h5 class="card-title">${job.title}</h5>
+              <h5 class="card-title">
+              ${job.title}
+               ${job.isFeatured ? '<span class="badge bg-warning text-dark ms-2">🌟 Featured</span>' : ''}
+              </h5>
               <p class="card-text">
                 <strong>Location:</strong> ${job.location}<br/>
                 <strong>Posted On:</strong> ${new Date(job.createdAt).toLocaleDateString()}
@@ -122,3 +129,64 @@ async function deleteJob(jobId) {
 function editJob(jobId) {
     window.location.href = `/create-job/create-job.html?id=${jobId}`;
 }
+
+// buyPremium feature
+ 
+
+  buyPremiumBtn.addEventListener("click", async () => {
+    try {
+      const response = await axios.post("/api/order/create-order", {},{
+         headers: {
+        Authorization: `Bearer ${token}`
+      }
+      });
+
+      const order = response.data;
+     console.log(order);
+      // Step 2: Configure Razorpay checkout options
+      const options = {
+        key:"rzp_test_KwsDOyvLFExWYC", // Replace with actual Razorpay Key ID
+        amount: order.amount, // in paise
+        currency: "INR",
+        order_id: order.orderId,
+        name: "JobStacker Premium",
+        description: "Upgrade to Premium",
+        
+
+        handler: async function (response) {
+          try {
+            console.log(response);
+            const verifyRes = await axios.post("/api/order/verify-payment", {
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature
+            },{
+         headers: {
+        Authorization: `Bearer ${token}`
+      }
+      });
+
+            if (verifyRes.data.success) {
+              alert("Premium Activated!");
+              location.reload();
+            } else {
+              alert("Payment verification failed.");
+            }
+          } catch (err) {
+            console.error("Verification Error:", err);
+            alert("Something went wrong while verifying payment.");
+          }
+        },
+
+        theme: {
+          color: "#6777ef"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Order Creation Error:", err);
+      alert("Something went wrong while initiating payment.");
+    }
+  });

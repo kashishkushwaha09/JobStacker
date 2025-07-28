@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const razorpay = require("../utils/razorpayInstance");
 const Order = require("../models/orderModel");
-const Job= require("../models/jobModel");
+// const Job= require("../models/jobModel");
 const Profile=require("../models/profileModel");
 const premiumPlans= require("../config/premiumPlans");
 const { AppError } = require("../utils/appError");
@@ -9,7 +9,9 @@ const { AppError } = require("../utils/appError");
 const createOrder=async (req,res,next)=>{
     try {
         const profileId=req.profile._id;
-         const { userType, email} = req.body;
+        const userType=req.user.role;
+        const email=req.user.email
+        //  const { userType, email} = req.body;
 
     if (!userType || !email || !profileId) {
       throw new AppError("Missing required fields",400);
@@ -62,12 +64,17 @@ const verifyPayment=async(req,res,next)=>{
       .digest("hex");
 
     if (generated_signature !== razorpay_signature) {
-         await Order.findOneAndUpdate(
+         const failedUpdate =await Order.findOneAndUpdate(
         { orderId: razorpay_order_id },
         {
           status: "failed",
         }
       );
+       if (!failedUpdate) {
+    console.log("Order not found for update:", razorpay_order_id);
+  } else {
+    console.log("Order status updated to FAILED:", failedUpdate);
+  }
         throw new AppError( "Signature verification failed",400);
     }
 
@@ -90,13 +97,13 @@ const verifyPayment=async(req,res,next)=>{
         await Profile.findByIdAndUpdate(profileId, {
            hasPremiumAccess: true,
         });
-        await Job.updateMany(
-    { postedBy: profileId },
-    { isFeatured: true }
-  );
+//         await Job.updateMany(
+//     { postedBy: profileId },
+//     { isFeatured: true }
+//   );
       }
     }
-    res.json({ message: "Payment verified successfully", order: updatedOrder });
+    res.json({ message: "Payment verified successfully", order: updatedOrder,success:true });
   } catch (error) {
     console.error("Payment verification error:", error);
      if (!(error instanceof AppError)) {

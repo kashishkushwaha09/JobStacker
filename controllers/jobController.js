@@ -65,7 +65,8 @@ try {
 const getOneJob=async(req,res,next)=>{
 try {
     const jobId=req.params.id;
-     const job=await jobService.getOne(jobId);
+    const profileId=req.profile._id;
+     const job=await jobService.getOne(jobId,profileId);
     res.status(200).json({message:"Job fetched successfully!",job,success:true});
 } catch (error) {
     console.log(error);
@@ -155,7 +156,24 @@ try {
 // const searchJobs=async(req,res,next)=>{
 
 // }
+const getJobInsights = async (req, res,next) => {
+  try {
+    const jobId = req.params.jobId;
+    const jobInsights=await jobService.getJobInsights(jobId);
+    return res.status(200).json({
+      success: true,
+      jobInsights
+    });
+
+  } catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+  }
+};
 module.exports={
-   create,getAll,getOneJob,getJobsPostedByUser,update,changeStatus,deleteJob,
+   create,getAll,getOneJob,getJobsPostedByUser,update,changeStatus,deleteJob,getJobInsights
 //    searchJobs
 }

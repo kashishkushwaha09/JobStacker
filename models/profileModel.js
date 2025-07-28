@@ -58,6 +58,10 @@ profileViewCount: {
   type: Number,
   default: 0,
 },
+resumeDownloadCount: {
+  type: Number,
+  default: 0,
+},
   // Recruiter-specific fields
   companyName:String,
   companyAbout:String,

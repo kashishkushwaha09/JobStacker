@@ -1,8 +1,12 @@
 const { AppError } = require('../utils/appError');
 const Job=require('../models/jobModel');
+const Application=require('../models/applicationModel');
+const Profile=require('../models/profileModel');
 const create=async(fields,profileId)=>{
 try {
-   fields.postedBy=profileId;
+  const profile = await Profile.findById(profileId);
+   fields.postedBy=profile._id;
+   fields.isFeatured=profile.hasPremiumAccess === true;
    const newJob=new Job(fields);
    await newJob.save();
 } catch (error) {
@@ -55,7 +59,11 @@ try {
    await existedJob.save();
    return existedJob;
 } catch (error) {
-    throw new AppError(error.message,500);
+     console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        throw error;
 }
 }
 const deleteJob=async(jobId,profileId)=>{
@@ -67,7 +75,11 @@ const deleteJob=async(jobId,profileId)=>{
 
     return deletedJob; 
     } catch (error) {
-      throw new AppError(error.message,500);  
+       console.log(error);
+          if (!(error instanceof AppError)) {
+              error = new AppError(error.message, 500);
+          }
+          throw error;
     }
 }
 const getAll=async()=>{
@@ -78,26 +90,46 @@ const getAll=async()=>{
     throw new AppError(error.message,500);
 }
 }
-const getOne=async(jobId)=>{
+const getOne=async(jobId,profileId)=>{
   try {
-   const job=await Job.findById(jobId).populate('postedBy','name companyName companyAbout companyLocation').lean();
+   const job=await Job.findById(jobId);
+  //  .populate('postedBy','name companyName companyAbout companyLocation').lean();
    if (!job) {
   throw new AppError("Job not found", 404);
 }
-   return job;
+if (!job.viewedBy.includes(profileId)) {
+    job.views += 1;
+    job.viewedBy.push(profileId);
+    await job.save();
+  }
+ const populatedJob = await Job.findById(jobId)
+    .populate('postedBy','name companyName companyAbout companyLocation').lean();
+
+   return populatedJob;
 } catch (error) {
-    throw new AppError(error.message,500);
+     console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+       throw error;
 }
 }
 const getJobsPostedByUser=async(profileId)=>{
     try {
-   const jobs=await Job.find({postedBy:profileId}).populate('postedBy','name companyName companyAbout companyLocation').lean();
+   const jobs=await Job.find({postedBy:profileId})
+    .sort({ isFeatured: -1, createdAt: -1 })
+   .populate('postedBy','name companyName companyAbout companyLocation')
+   .lean();
    if (!jobs) {
   throw new AppError("Jobs not found", 404);
 }
    return jobs;
 } catch (error) {
-    throw new AppError(error.message,500);
+     console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        throw error;
 } 
 }
 const changeStatus=async(jobId,profileId)=>{
@@ -112,9 +144,48 @@ const changeStatus=async(jobId,profileId)=>{
     await job.save();
    return job;
 } catch (error) {
-    throw new AppError(error.message,500);
+     console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+       throw error;
 } 
 }
+const getJobInsights=async(jobId)=>{
+  try {
+     const job = await Job.findById(jobId).lean();
+      if (!job) throw new AppError("Job not found",404);
+      const views = job.views || 0;
+      const totalApplications = await Application.countDocuments({ job: jobId });
+      const premiumApplications = await Application.find({ job: jobId }).populate("applicant", "hasPremiumAccess");
+    const premiumCount = premiumApplications.filter(app => app.applicant?.hasPremiumAccess).length;
+
+    const postedAt = new Date(job.createdAt);
+    const options = {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+};
+const formattedPostedAt = postedAt.toLocaleString('en-IN', options);
+  
+    return {
+       title: job.title,
+        views,
+        totalApplications,
+        premiumCount,
+        timeSincePosted:formattedPostedAt
+    }
+  } catch (error) {
+     console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        throw error;
+  }
+}
 module.exports={
-    create,update,deleteJob,getAll,getOne,getJobsPostedByUser,changeStatus
+    create,update,deleteJob,getAll,getOne,getJobsPostedByUser,changeStatus,getJobInsights
 }

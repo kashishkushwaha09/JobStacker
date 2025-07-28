@@ -1,6 +1,23 @@
 const { AppError } = require("../utils/appError");
-const {uploadToCloudinary}=require('../config/cloudinary');
+const uploadToCloudinary=require('../config/cloudinary');
+const fs = require("fs");
+const path = require("path");
 const profileService=require('../services/profileService');
+const resumeDownload=async(req,res,next)=>{
+     try {
+    const { profileId } = req.params;
+    console.log("profileId",profileId);
+   const {resumePath,cleanName}=await profileService.resumeDownload(profileId);
+   console.log(resumePath);
+    res.download(resumePath,cleanName);
+  } catch (error) {
+    console.log(error);
+    if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error);
+  }
+}
 const updateProfileApplicant = async (req, res, next) => {
     try {
         const { name, headline, about, location, skills, experience, education, projects } = req.body;
@@ -65,18 +82,44 @@ const updateProfileApplicant = async (req, res, next) => {
         if(req.files){
             const profileFile = req.files.profilePicture?.[0];
             const resumeFile = req.files.resume?.[0];
-            if (profileFile) {
-    const profileDataUri = `data:${profileFile.mimetype};base64,${profileFile.buffer.toString('base64')}`;
-    const profileUpload = await uploadToCloudinary(profileDataUri, 'image');
-    updatedFields.profilePicture = profileUpload.result.secure_url;
+           if (profileFile) {
+    const profileUrl = await uploadToCloudinary(
+      profileFile.buffer,
+      "user_uploads/images",
+      profileFile.originalname
+    );
+    updatedFields.profilePicture=profileUrl;
   }
 
-  if (resumeFile) {
-    const resumeDataUri = `data:${resumeFile.mimetype};base64,${resumeFile.buffer.toString('base64')}`;
-    const resumeUpload = await uploadToCloudinary(resumeDataUri, 'raw');
-    updatedFields.resumeUrl = resumeUpload.rawfileUrl;
-  }
+ if (resumeFile) {
+   const fileType = resumeFile.mimetype;
+   if (fileType === "application/pdf") {
+    const timestamp = Date.now();
+const fileName = `${timestamp}_${resumeFile.originalname}`;
+      const uploadPath = path.join(__dirname, "../uploads/pdfs");
+      const filePath = path.join(uploadPath, fileName);
+
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+  // Delete old resume
+        const existingProfile = await profileService.findById(req.profile._id);
+        if (existingProfile.resumeUrl) {
+            const oldFilePath = path.join(__dirname, "..", existingProfile.resumeUrl);
+            if (fs.existsSync(oldFilePath)) {
+                fs.unlinkSync(oldFilePath);
+            }
         }
+      fs.writeFileSync(filePath, resumeFile.buffer);
+      const url = `/uploads/pdfs/${fileName}`;
+       updatedFields.resumeUrl=url;
+
+    } else {
+        throw new AppError("Unsupported file type",400);
+    }
+    
+  }
+        }   
      const profile=await profileService.update(updatedFields,req.user._id);
      res.status(200).json({message:"Profile Updated successfully",profile,success:true});
 } catch (error) {
@@ -102,9 +145,13 @@ const updateProfileRecruiter = async (req, res, next) => {
 
          if(req.file){
             const profileFile = req.file;
-            const profileDataUri=`data:${profileFile.mimetype};base64,${profileFile.buffer.toString('base64')}`;
-            const profileUpload=await uploadToCloudinary(profileDataUri,'image');
-            updatedFields.profilePicture=profileUpload.result.secure_url;
+            const profileUrl =await uploadToCloudinary(
+      profileFile.buffer,
+      "user_uploads/images",
+      profileFile.originalname
+    );
+    
+    updatedFields.profilePicture =profileUrl;
         }
      const profile=await profileService.update(updatedFields,req.user._id);
      res.status(200).json({message:"Profile Updated successfully",profile,success:true});
@@ -131,9 +178,9 @@ const deleteProfile=async (req,res,next)=>{
 }
 const getProfile=async (req,res,next)=>{
       try {
-        const userId=req.user._id;
-        const id=req.params.id;
-        const profile =await profileService.getProfile(userId,id);
+        const applicantId =req.params.id;
+        const viewerId = req.profile._id; 
+        const profile =await profileService.getProfile(applicantId,viewerId);
         res.status(200).json({message:'profile fetched',profile,success:true});
     } catch (error) {
         console.log(error);
@@ -158,5 +205,5 @@ const myProfile=async (req,res,next)=>{
     }
 }
 module.exports = {
-    updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile,myProfile
+    resumeDownload,updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile,myProfile
 }

@@ -28,7 +28,16 @@ const applicationSchema = new Schema({
         type: String,
         enum: ["pending", "accepted", "rejected"],
         default: "pending"
-    }
+    },
+    recruiterViewedProfile: {
+  type: Boolean,
+  default: false,
+},
+
+resumeDownloaded: {
+  type: Boolean,
+  default: false,
+},
 }, { timestamps: true });
 
 module.exports = mongoose.model("Application", applicationSchema);

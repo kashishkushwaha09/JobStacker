@@ -1,7 +1,21 @@
 const applicationService=require('../services/applicationService');
 const { AppError } = require('../utils/appError');
 
-
+const getInsights=async(req,res,next)=>{
+  try {
+    const applicantId = req.profile._id; 
+    const insights=await applicationService.getInsights(applicantId);
+    
+    res.json({ success: true, insights });
+  } catch (error) {
+    console.error("Error fetching applicant insights:", err);
+     if (!(error instanceof AppError)) {
+        error = new AppError(error.message, 500);
+    }
+    next(error); 
+    
+  }
+}
 const applyToJob=async(req,res,next)=>{
 try {
     const jobId=req.body.jobId;
@@ -64,4 +78,4 @@ const updateApplicationStatus = async (req, res, next) => {
 };
 
 
-module.exports={applyToJob,getMyApplications,getApplicationsByJob,updateApplicationStatus};
+module.exports={getInsights,applyToJob,getMyApplications,getApplicationsByJob,updateApplicationStatus};

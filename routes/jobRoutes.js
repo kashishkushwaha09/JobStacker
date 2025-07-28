@@ -13,5 +13,6 @@ router.delete('/:id',authenticateUser,isRecruiter,jobController.deleteJob);
 router.get('/',authenticateUser,jobController.getAll);
 router.get('/postedByRecruiter',authenticateUser,jobController.getJobsPostedByUser);
 router.get('/:id',authenticateUser,jobController.getOneJob);
+router.get('/insights/:jobId',authenticateUser,isRecruiter,jobController.getJobInsights);
 
 module.exports=router;

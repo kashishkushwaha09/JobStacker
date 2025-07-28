@@ -8,6 +8,8 @@
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
 
 </head>
 <body>
@@ -21,12 +23,24 @@
         <li class="nav-item">
           <a class="nav-link fw-semibold" href="/recruiter-dashboard/dashboard.html">Dashboard</a>
         </li>
+        <li>
+          <a href="/recruiter-dashboard/insights.html" class="nav-link fw-semibold">
+  📊 View Job Insights
+</a>
+        </li>
           <li class="nav-item">
           <a class="nav-link fw-semibold text-success" href="/create-job/create-job.html">
             ➕ Post Job
           </a>
         </li>
-         
+                  <!--Buy Premium Button -->
+  <li class="nav-item">
+    <button class="btn btn-warning fw-semibold ms-3" id="buyPremiumBtn">Buy Premium</button>
+  </li>
+   <!-- Premium Badge-->
+  <li class="nav-item" id="premiumBadgeContainer" style="display: none;">
+    <span class="btn btn-success text-light fw-semibold ms-3">⭐ Premium</span>
+  </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle fw-semibold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <span id="applicantName">Recruiter</span>
