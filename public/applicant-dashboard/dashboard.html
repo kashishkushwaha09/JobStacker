@@ -14,7 +14,7 @@
   <!--Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold text-primary" href="#">JobStacker</a>
+    <a class="navbar-brand fw-bold text-primary" href="/index.html">JobStacker</a>
 
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
@@ -55,6 +55,17 @@
   <h2 class="mb-4">Browse All Jobs</h2>
   <div id="jobsContainer" class="row row-cols-1 row-cols-md-2 g-4">
     <!-- Jobs will be rendered here -->
+  </div>
+</div>
+<!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="myToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">
+        Welcome!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
   </div>
 </div>
   

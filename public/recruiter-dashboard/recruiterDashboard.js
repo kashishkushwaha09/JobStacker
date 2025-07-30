@@ -1,8 +1,9 @@
 const token = localStorage.getItem("token");
 const buyPremiumBtn = document.getElementById("buyPremiumBtn");
 const premiumBadgeContainer=document.getElementById("premiumBadgeContainer");
+const jobInsightPremium=document.getElementById("jobInsightPremium");
 if (!token) {
-    window.location.href = "/login.html";
+    window.location.href = "/login/login.html";
 }
 const profileInfo = document.getElementById("profileInfo");
 const nameSpan = document.getElementById("applicantName");
@@ -21,6 +22,7 @@ async function loadProfile() {
     if(profile.hasPremiumAccess){
         buyPremiumBtn.style.display = "none";
         premiumBadgeContainer.style.display = "inline-block";
+        jobInsightPremium.style.display="inline-block";
     }
     } catch (err) {
         console.error("Error loading profile", err);
@@ -40,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-        alert("You must be logged in");
+       showToast("You must be logged in", "danger");
         return;
     }
 
@@ -54,11 +56,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         const jobs = res.data.jobs;
         console.log(jobs);
         if (jobs.length === 0) {
+           showToast("You haven't posted any jobs yet!", "danger");
             container.innerHTML = "<p>No jobs posted yet.</p>";
             return;
         }
 
         jobs.forEach((job) => {
+          const isDisabled = job.isActive ? "" : "disabled";
             const jobCard = document.createElement("div");
             jobCard.className = "col";
             jobCard.innerHTML = `
@@ -73,11 +77,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <strong>Posted On:</strong> ${new Date(job.createdAt).toLocaleDateString()}
               </p>
               <p>Status: <strong>${job.isActive ? 'Active' : 'Inactive'}</strong></p>
-              <button class="btn btn-sm btn-outline-primary toggle-status-btn" onclick="toggleJobStatus('${job._id}')">
+              <a href="/job-details/job-details.html?jobId=${job._id}" class="btn btn-info btn-sm me-0">View Details</a>
+              <button class="btn btn-sm btn-outline-primary toggle-status-btn" onclick="toggleJobStatus(event,'${job._id}')">
   Toggle Status
 </button>
-              <button class="btn btn-primary btn-sm me-2" onclick="editJob('${job._id}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteJob('${job._id}')">Delete</button>
+              <button class="btn btn-primary btn-sm me-0" onclick="editJob('${job._id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteJob(event,'${job._id}')" ${isDisabled}>Delete</button>
               <a href="/recruiter-applications/recruiter-applications.html?jobId=${job._id}" class="btn btn-outline-secondary btn-sm fw-medium">View Applications</a>
               
             </div>
@@ -88,42 +93,54 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     } catch (error) {
         console.error("Error fetching jobs:", error);
-        alert("Failed to load jobs.");
+         showToast("Failed to load jobs!", "danger");
     }
 });
-async function toggleJobStatus(jobId) {
+async function toggleJobStatus(event,jobId) {
   try {
-   
+   const btn = event.target;
+  btn.disabled = true;
     const res = await axios.patch(`/api/job/${jobId}/status`, {},{
          headers: {
                 Authorization: `Bearer ${token}`,
             },
     });
-    alert("Job status updated!");
+    showToast("Job status updated!", "success");
     location.reload();
   } catch (err) {
     console.error(err);
-    alert("Failed to update status");
-  }
+    showToast("Failed to update status!", "danger");
+  }finally{
+    btn.disabled = false
+  };
 }
 
-async function deleteJob(jobId) {
+async function deleteJob(event,jobId) {
+  
     if (!confirm("Are you sure you want to delete this job?")) return;
 
     const token = localStorage.getItem("token");
-
+    
     try {
+      const btn = event.target;
+  btn.disabled = true;
         await axios.delete(`/api/job/${jobId}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-        alert("Job deleted successfully.");
-        location.reload();
+        showToast("Job deleted successfully!", "success");
+        setTimeout(() => {
+           location.reload();
+           
+        }, 2000);
+       
     } catch (error) {
         console.error("Delete error:", error);
-        alert("Failed to delete job.");
-    }
+        showToast("Failed to delete job!", "danger");
+    }finally{
+    btn.disabled = false
+  };
 }
 
 function editJob(jobId) {
@@ -131,7 +148,6 @@ function editJob(jobId) {
 }
 
 // buyPremium feature
- 
 
   buyPremiumBtn.addEventListener("click", async () => {
     try {
@@ -167,14 +183,14 @@ function editJob(jobId) {
       });
 
             if (verifyRes.data.success) {
-              alert("Premium Activated!");
+               showToast("Premium Activated!!", "success");
               location.reload();
             } else {
-              alert("Payment verification failed.");
+              showToast("Payment verification failed!", "danger");
             }
           } catch (err) {
             console.error("Verification Error:", err);
-            alert("Something went wrong while verifying payment.");
+            showToast("Something went wrong while verifying payment!", "danger");
           }
         },
 
@@ -187,6 +203,16 @@ function editJob(jobId) {
       rzp.open();
     } catch (err) {
       console.error("Order Creation Error:", err);
-      alert("Something went wrong while initiating payment.");
+      showToast("Something went wrong while initiating payment!", "danger");
     }
   });
+
+  function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
+

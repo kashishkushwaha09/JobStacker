@@ -25,9 +25,9 @@ const getInsights=async(applicantId)=>{
         throw error; 
   }
 }
-const apply=async(jobId,profile)=>{
+const apply=async(jobId,profile,user)=>{
 try {
-    const job=await jobService.getOne(jobId);
+    const job=await jobService.getOne(jobId,user,profile._id);
     if (!job.isActive|| new Date() > new Date(job.applicationDeadline)) {
   throw new AppError("This job is no longer accepting applications", 400);
 }

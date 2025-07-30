@@ -6,7 +6,12 @@ form.addEventListener("submit", async (e) => {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   const role = document.getElementById("role").value;
-
+ const btn = document.getElementById("registerBtn");
+  btn.disabled = true;
+  btn.innerHTML = `
+    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    Registering...
+  `;
   try {
     const response = await axios.post("/api/auth/signup", {
       name,
@@ -14,14 +19,36 @@ form.addEventListener("submit", async (e) => {
       password,
       role
     });
-    const { token, role } = response.data;
+    const { token, role:userRole} = response.data;
       localStorage.setItem("token", token);
-    localStorage.setItem("role", role);
+    localStorage.setItem("role", userRole);
+    showToast("Registered successfully!", "success");
+    // setTimeout(() => {
+    //   if (role === "applicant") {
+    //    setTimeout(() => window.location.href = "/applicant-dashboard/dashboard.html", 2000);
+    // } else if (role === "recruiter") {
+    //    setTimeout(() => window.location.href = "/recruiter-dashboard/dashboard.html", 2000);
+    // } else {
+       setTimeout(() => window.location.href = "/", 2000);
 
-    msg.innerHTML = `<span class="text-success">Registered Successfully!</span>`;
+    // }
+    // }, 2000);
     form.reset();
   } catch (err) {
+     btn.disabled = false;
+    btn.innerHTML = "Register";
     console.error(err);
-    msg.innerHTML = `<span class="text-danger">${err?.response?.data?.message || "Something went wrong"}</span>`;
+     showToast("Registration failed", "danger");
   }
+
 });
+
+
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}

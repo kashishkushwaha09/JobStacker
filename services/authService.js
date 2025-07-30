@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const sendEmail=require('../utils/sendEmail');
 const User = require('../models/userModel');
 const Profile = require('../models/profileModel');
 const { AppError } = require('../utils/appError');
@@ -30,6 +30,24 @@ const signUp = async (name, email, password, role) => {
         userId,name:name
        });
        await newProfile.save();
+         // Send Welcome Email Based on Role
+      if (role === "recruiter") {
+        await sendEmail(
+          email,
+          "Welcome to JobStacker, Recruiter 👥",
+          `<h2>Hello ${name} 👋</h2>
+           <p>You're now part of the JobStacker recruiting community.</p>
+           <p>Start posting jobs and finding amazing talent today!</p>`
+        );
+      } else {
+        await sendEmail(
+          email,
+          "Welcome to JobStacker 👋",
+          `<h2>Hello ${name} 👋</h2>
+           <p>Thanks for signing up!</p>
+           <p>Explore job opportunities and grow your career now!</p>`
+        );
+      }
        const secret=process.env.SECRET_KEY;
        console.log("Secret key ",secret);
         const token=jwt.sign(
@@ -57,6 +75,13 @@ try {
         if(!isPasswordMatched){
             throw new AppError('Invalid Password',400);
         }
+        await sendEmail(
+  existingUser.email,
+  "New Login to Your JobStacker Account 👀",
+  `<p>Hi ${existingUser.name || "User"},</p>
+   <p>Your account was just accessed on ${new Date().toLocaleString()}.</p>
+   <p>If this wasn’t you, please reset your password immediately.</p>`
+);
         const token=jwt.sign(
             {userId:existingUser._id,email:existingUser.email},
             process.env.SECRET_KEY,

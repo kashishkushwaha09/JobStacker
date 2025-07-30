@@ -85,7 +85,8 @@ const deleteJob=async(jobId,profileId)=>{
 }
 const getAll=async(profileId)=>{
     try {
-   const jobs=await Job.find().populate('postedBy','name companyName companyAbout companyLocation').sort({updatedAt:-1}).lean();
+   const jobs=await Job.find().populate('postedBy','name companyName companyAbout companyLocation')
+   .sort({ isFeatured: -1, updatedAt: -1 }).lean();
    const savedJobs = await SavedJob.find({ applicant: profileId }).select("job");
    console.log("savedJobs",savedJobs);
 
@@ -102,14 +103,15 @@ const getAll=async(profileId)=>{
     throw new AppError(error.message,500);
 }
 }
-const getOne=async(jobId,profileId)=>{
+const getOne=async(jobId,user,profileId)=>{
   try {
    const job=await Job.findById(jobId);
   //  .populate('postedBy','name companyName companyAbout companyLocation').lean();
    if (!job) {
   throw new AppError("Job not found", 404);
 }
-if (!job.viewedBy.includes(profileId)) {
+console.log("user",user);
+if (user.role === "applicant" && !job.viewedBy.includes(profileId)) {
     job.views += 1;
     job.viewedBy.push(profileId);
     await job.save();

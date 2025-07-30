@@ -1,7 +1,7 @@
 const token = localStorage.getItem("token");
 
 if (!token) {
-  window.location.href = "/login.html"; 
+  window.location.href = "/login/login.html"; 
 }
 async function loadSavedJobs() {
   const container = document.getElementById("savedJobsContainer");
@@ -15,7 +15,7 @@ async function loadSavedJobs() {
     const jobs = res.data.savedJobs;
 
     if (!jobs.length) {
-      container.innerHTML = "<p>No saved jobs found.</p>";
+      container.innerHTML = "<p class='text-danger'>No saved jobs found.</p>";
       return;
     }
 
@@ -43,12 +43,24 @@ async function unsaveJob(jobId) {
     await axios.delete(`/api/saved-jobs/unsave/${jobId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    location.reload();
+    showToast("Job unsaved successfully!","success");
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
+    
   } catch (err) {
     console.error(`Error unsaving job ${jobId}:`, err);
-    alert("Failed to unsave job. Please try again.");
+    showToast("Failed to unsave job. Please try again.","danger");
   }
 }
 
 loadSavedJobs();
-  
+
+  function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}

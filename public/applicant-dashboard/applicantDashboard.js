@@ -2,7 +2,7 @@ const token = localStorage.getItem("token");
 const buyPremiumBtn = document.getElementById("buyPremiumBtn");
 const premiumBadgeContainer=document.getElementById("premiumBadgeContainer");
 if (!token) {
-  window.location.href = "/login.html"; 
+  window.location.href = "/login/login.html"; 
 }
 const profileInfo = document.getElementById("profileInfo");
 const nameSpan = document.getElementById("applicantName");
@@ -61,12 +61,13 @@ const getAllJobs = async () => {
         const isOpen = job.isActive && deadline > now;
       const card = document.createElement("div");
       card.className = "col";
-     const isDisabled = job.isSaved ? "disabled" : "";
-     const btnLabel = job.isSaved ? "Saved" : "Save";
       card.innerHTML = `
         <div class="card shadow-sm border rounded">
           <div class="card-body">
-            <h5 class="card-title">${job.title}</h5>
+            <h5 class="card-title">
+              ${job.title}
+               ${job.isFeatured ? '<span class="badge bg-warning text-dark ms-2">🌟</span>' : ''}
+              </h5>
             <p class="card-text mb-1"><strong>Company:</strong> ${job.postedBy?.companyName || 'Unknown'}</p>
             <p class="card-text mb-1"><strong>Location:</strong> ${job.location}</p>
             <p class="card-text mb-1"><strong>Type:</strong> ${job.jobType}</p>
@@ -74,8 +75,8 @@ const getAllJobs = async () => {
   ? `🟢 Open till: ${deadline.toDateString()}`
   : `🔴 Applications Closed`}</p>
             <button class="btn btn-sm btn-primary" onclick="viewDetails('${job._id}')">View Details</button>
-            <button class="btn btn-outline-primary btn-sm" onclick="saveJob('${job._id}')"
-            ${isDisabled}> ${btnLabel}</button>
+            <button class="btn btn-outline-primary btn-sm" onclick="toggleSaveJob(this, '${job._id}')" 
+            data-saved="${job.isSaved}"> ${job.isSaved ? "Unsave" : "Save"}</button>
 
           </div>
         </div>
@@ -131,14 +132,14 @@ getAllJobs();
       });
 
             if (verifyRes.data.success) {
-              alert("Premium Activated!");
+              showToast("Premium Activated!","success");
               location.reload();
             } else {
-              alert("Payment verification failed.");
+              showToast("Payment verification failed.","danger");
             }
           } catch (err) {
             console.error("Verification Error:", err);
-            alert("Something went wrong while verifying payment.");
+            showToast("Something went wrong while verifying payment","danger");
           }
         },
 
@@ -151,7 +152,7 @@ getAllJobs();
       rzp.open();
     } catch (err) {
       console.error("Order Creation Error:", err);
-      alert("Something went wrong while initiating payment.");
+      showToast("Something went wrong while initiating payment.","danger")
     }
   });
   async function saveJob(jobId) {
@@ -161,9 +162,64 @@ getAllJobs();
         Authorization: `Bearer ${token}`,
       },
     });
-    alert("Job saved!");
+    showToast("Job saved!","success");
+     
   } catch (err) {
-    alert(err.response?.data?.message || "Error saving job");
+    showToast(err.response?.data?.message || "Error saving job","danger");
+  }
+}
+async function toggleSaveJob(button, jobId) {
+  const isSaved = button.getAttribute("data-saved") === "true";
+  console.log(isSaved);
+  const url = isSaved
+    ? `/api/saved-jobs/unsave/${jobId}`
+    : `/api/saved-jobs/save/${jobId}`;
+console.log(url);
+  try {
+    button.disabled = true; // optional: disable *only during* request
+
+     if (isSaved) {
+      await axios.delete(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    } else {
+      await axios.post(url, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    }
+  
+    // Toggle saved state
+    button.setAttribute("data-saved", (!isSaved).toString());
+
+    button.innerText = !isSaved ? "Unsave" : "Save"; // change label
+     if(isSaved){
+      showToast("Job unsaved successfully!","success");
+     }else{
+      showToast("Job saved successfully!","success");
+     }
+  } catch (err) {
+    console.error("Unsave error:", err);
+    showToast(err.response?.data?.message || "Error updating saved status","danger");
+  } finally {
+    button.disabled = false; // re-enable
   }
 }
 
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
+
+window.addEventListener("pageshow", function (event) {
+  if (event.persisted || performance.getEntriesByType("navigation")[0].type === "back_forward") {
+    location.reload();
+  }
+});

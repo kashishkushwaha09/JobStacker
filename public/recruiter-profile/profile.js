@@ -1,11 +1,12 @@
 const token = localStorage.getItem("token");
 const editBtn = document.getElementById('editBtn');
 const saveBtn = document.getElementById('saveBtn');
+const cancelBtn = document.getElementById("cancelBtn");
 const form = document.getElementById('profileForm');
 let profile = null;
 let isEditable = false;
 if (!token) {
-    window.location.href = "/login.html";
+    window.location.href = "/login/login.html";
 }
 
 function renderProfilePicture(profilePictureUrl, isEditable = false) {
@@ -56,6 +57,7 @@ async function loadProfile() {
         renderProfilePicture(profile.profilePicture);
     } catch (err) {
         console.error("Error loading profile", err);
+        showToast("Failed fetching profile","danger");
     }
 }
 
@@ -72,7 +74,20 @@ editBtn.addEventListener('click', () => {
     // Toggle buttons
     editBtn.classList.add('d-none');
     saveBtn.classList.remove('d-none');
+    cancelBtn.classList.remove("d-none");
+
   });
+  cancelBtn.addEventListener("click", () => {
+     isEditable=true;
+  const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+      input.disabled = false;
+    });
+    
+  saveBtn.classList.add("d-none");
+  cancelBtn.classList.add("d-none");
+  editBtn.classList.remove("d-none");
+});
 
   // handle form submission
 form.addEventListener("submit",async(e)=>{
@@ -95,6 +110,12 @@ console.log(profilePicInput);
 for (let [key, value] of formData.entries()) {
   console.log(`${key}:`, value);
 }
+saveBtn.disabled = true;
+cancelBtn.disabled = true;
+  submitBtn.innerHTML = `
+    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    "Saving..."
+  `;
 
   try {
     const response = await axios.patch("/api/profile/recruiter", formData, {
@@ -116,14 +137,29 @@ for (let [key, value] of formData.entries()) {
     // Toggle buttons
     editBtn.classList.remove('d-none');
     saveBtn.classList.add('d-none');
+    cancelBtn.classList.add('d-none');
     loadProfile();
     
   } catch (error) {
+    saveBtn.disabled = false;
+cancelBtn.disabled = false;
+saveBtn.innerHTML='Save';
     if (error.response) {
       console.error("Server error:", error.response.data);
+      showToast("Something went wrong","danger");
     } else {
       console.error("Network error:", error.message);
+      showToast("Something went wrong","danger");
     }
   }
 });
 
+
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}

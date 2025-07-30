@@ -66,8 +66,9 @@ try {
 const getOneJob=async(req,res,next)=>{
 try {
     const jobId=req.params.id;
+    const user=req.user;
     const profileId=req.profile._id;
-     const job=await jobService.getOne(jobId,profileId);
+     const job=await jobService.getOne(jobId,user,profileId);
     res.status(200).json({message:"Job fetched successfully!",job,success:true});
 } catch (error) {
     console.log(error);

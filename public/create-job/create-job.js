@@ -1,23 +1,25 @@
-
+ const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "/login/login.html"; 
+}
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("createJobForm");
   const params = new URLSearchParams(window.location.search);
   const jobId = params.get("id");
-
+console.log(jobId);
   if (jobId) {
     document.querySelector("h2").innerText = "Edit Job Post";
     form.querySelector("button[type='submit']").innerText = "Update Job";
 
     (async () => {
       try {
-        const token = localStorage.getItem("token");
-
+    
         const { data } = await axios.get(`/api/job/${jobId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         const job = data.job;
-
+        console.log(job);
         form.title.value = job.title;
         form.description.value = job.description;
         form.salary.value = job.salary;
@@ -35,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
+    const submitBtn=document.getElementById("submitBtn");
     const jobData = {
       title: form.title.value.trim(),
       description: form.description.value.trim(),
@@ -50,7 +52,11 @@ document.addEventListener("DOMContentLoaded", () => {
       applicationDeadline: form.applicationDeadline.value,
       openings: Number(form.openings.value),
     };
-
+    submitBtn.disabled = true;
+  submitBtn.innerHTML = `
+    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    ${jobId? "Updating...":"Creating..."}
+  `;
     try {
       const token = localStorage.getItem("token");
 
@@ -59,19 +65,37 @@ document.addEventListener("DOMContentLoaded", () => {
         res = await axios.patch(`/api/job/${jobId}`, jobData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        alert("Job updated successfully!");
+        showToast("Job updated successfully!","success");
+        
       } else {
         res = await axios.post("/api/job", jobData, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        alert("Job created successfully!");
+        showToast("Job created successfully!","success");
+        
       }
 
-      form.reset();
-      window.location.href = "/recruiter-dashboard/dashboard.html"; // optional redirect
+      setTimeout(() => {
+        window.location.href = "/recruiter-dashboard/dashboard.html"; // optional redirect 
+      }, 2000);
+     
     } catch (err) {
       console.error("Error:", err.response?.data?.message || err.message);
-      alert(err.response?.data?.message || "Something went wrong");
+       submitBtn.disabled = false;
+    submitBtn.innerHTML =jobId?"Update Job":"Create Job";
+      showToast("Something went wrong!","danger");
+      
     }
   });
 });
+
+
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}
+

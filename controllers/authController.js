@@ -42,7 +42,13 @@ const signInUser=async(req,res,next)=>{
         next(error); 
     }
 }
-
+const userRole=async(req,res,next)=>{
+    try {
+        res.json({ role: req.user.role });
+    } catch (error) {
+        next(error);
+    }
+}
 module.exports={
-    signUpUser,signInUser
+    signUpUser,signInUser,userRole
 }

@@ -1,7 +1,8 @@
 const token = localStorage.getItem("token");
-
+const premiumBadgeContainer=document.getElementById("premiumBadgeContainer");
+const jobInsightPremium=document.getElementById("jobInsightPremium");
 if (!token) {
-  window.location.href = "/login.html"; 
+  window.location.href = "/login/login.html"; 
 }
 const profileInfo = document.getElementById("profileInfo");
 const nameSpan = document.getElementById("applicantName");
@@ -17,7 +18,11 @@ async function loadProfile() {
     const profile = res.data.profile;
     console.log(profile);
     nameSpan.innerText = profile.name || "Recruiter";
-
+    if(profile.hasPremiumAccess){
+        buyPremiumBtn.style.display = "none";
+        premiumBadgeContainer.style.display = "inline-block";
+        jobInsightPremium.style.display="inline-block";
+    }
   } catch (err) {
     console.error("Error loading profile", err);
   }
@@ -173,3 +178,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       alert("Something went wrong while initiating payment.");
     }
   });
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}

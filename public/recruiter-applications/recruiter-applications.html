@@ -14,12 +14,17 @@
   <!--Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold text-primary" href="#">JobStacker</a>
+    <a class="navbar-brand fw-bold text-primary" href="/index.html">JobStacker</a>
 
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link fw-semibold" href="/recruiter-dashboard/dashboard.html">Dashboard</a>
+        </li>
+         <li class="nav-item" id="jobInsightPremium" style="display: none;">
+          <a href="/recruiter-dashboard/insights.html" class="nav-link fw-semibold">
+  📊 View Job Insights
+</a>
         </li>
           <li class="nav-item">
           <a class="nav-link fw-semibold text-success" href="/create-job/create-job.html">
@@ -29,6 +34,10 @@
                          <!--Buy Premium Button -->
   <li class="nav-item">
     <button class="btn btn-warning fw-semibold ms-3" id="buyPremiumBtn">Buy Premium</button>
+  </li>
+   <!-- Premium Badge-->
+  <li class="nav-item" id="premiumBadgeContainer" style="display: none;">
+    <span class="btn btn-success text-light fw-semibold ms-3">⭐ Premium</span>
   </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle fw-semibold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -49,7 +58,17 @@
     <h2>Applicants for This Job</h2>
     <div id="applicationsContainer" class="row gy-3"></div>
   </div>
-  
+  <!-- TOAST -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="myToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage">
+        Welcome!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 
   

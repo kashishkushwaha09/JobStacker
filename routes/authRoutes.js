@@ -3,6 +3,8 @@ const router=express.Router();
 const authController=require('../controllers/authController');
 const { signUpValidation, signInValidation } = require('../middlewaress/validations');
 const validateRequest=require('../middlewaress/validationRequest');
+const authenticateUser=require('../middlewaress/authUser');
 router.post('/signup',signUpValidation,validateRequest,authController.signUpUser);
 router.post('/signIn',signInValidation,validateRequest,authController.signInUser);
+router.get('/me',authenticateUser,authController.userRole);
 module.exports=router;

@@ -1,8 +1,13 @@
   const token = localStorage.getItem("token");
+  if (!token) {
+  window.location.href = "/login/login.html"; 
+}
+  const role=localStorage.getItem("role");
+
 document.addEventListener("DOMContentLoaded", async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const jobId = urlParams.get("id");
-
+console.log(jobId);
   if (!jobId) {
     alert("Invalid Job ID");
     return;
@@ -36,17 +41,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         <p><strong>Description:</strong> ${job.description}</p>
         <p><strong>Skills Required:</strong> ${job.skillsRequired.join(", ")}</p>
          <p><strong>Salary:</strong> ${job.salary}</p>
-        <button class="btn btn-primary mt-3" id="applyBtn">Apply Now</button>
+         ${role==='applicant'?'<button class="btn btn-primary mt-3" id="applyBtn">Apply Now</button>':''}
+        
       
     `;
-   if(!isOpen){
+   if(!isOpen && role==='applicant'){
     const applyBtn = document.getElementById('applyBtn');
      applyBtn.disabled = true;
         applyBtn.innerText = 'Application Closed';
         applyBtn.classList.add('btn-danger');
         applyBtn.classList.remove('btn-primary');
    }
-    // document.body.appendChild(container);
+   if(role==='applicant'){
     axios.get('/api/application',{
       headers: {
         Authorization: `Bearer ${token}`
@@ -75,8 +81,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   .catch((error) => {
     console.error('Failed to fetch applications:', error);
   });
-
-    document.getElementById("applyBtn").addEventListener("click", async () => {
+   const applyBtn=document.getElementById("applyBtn");
+    applyBtn.addEventListener("click", async () => {
+      applyBtn.disabled=true;
+      applyBtn.innerHTML=`
+    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    Applying...
+  `;
       try {
        
          const response =await axios.post(`/api/application`, {jobId }, {
@@ -85,17 +96,29 @@ document.addEventListener("DOMContentLoaded", async () => {
           }
         });
 
-        alert("Applied successfully!");
-         document.getElementById("applyBtn").disabled = true;
-    document.getElementById("applyBtn").innerText = "Applied";
+        showToast("Applied successfully!","success");
+         applyBtn.disabled = true;
+    applyBtn.innerHTML = "Applied";
       } catch (err) {
-        console.error(err);
-        alert(err.response?.data?.message || "Failed to apply.");
+        applyBtn.disabled=false;
+        applyBtn.innerHTML='Apply Now';
+        console.log(err);
+        showToast(err.response?.data?.message || "Failed to apply.","danger");
       }
     });
 
+   }
+   
   } catch (err) {
     console.error("Error loading job:", err);
-    alert("Error fetching job details.");
+    showToast("Error fetching job details.","danger");
   }
 });
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
+}

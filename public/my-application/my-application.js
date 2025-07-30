@@ -1,7 +1,7 @@
 const token = localStorage.getItem("token");
 
 if (!token) {
-  window.location.href = "/login.html"; 
+  window.location.href = "/login/login.html"; 
 }
 const profileInfo = document.getElementById("profileInfo");
 const nameSpan = document.getElementById("applicantName");
@@ -61,9 +61,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           <div class="card-body">
             <h5 class="card-title">${job.title}</h5>
             <p class="card-text mb-0"><strong>Location:</strong> ${job.location}</p>
-            <p class="card-text mb-0"><strong>MatchedSkills:</strong> ${app.matchedSkills.join(',')}</p>
-            <p class="card-text mb-0"><strong>MissingSkills:</strong> ${app.missingSkills.join(',')}</p>
-            <p class="card-text mb-0"><strong>MatchedScore:</strong> ${app.matchScore}</p>
+            <p class="card-text mb-0"><strong>MatchedSkills:</strong> ${app.matchedSkills.join(', ')}</p>
+            <p class="card-text mb-0"><strong>MissingSkills:</strong> ${app.missingSkills.join(', ')}</p>
+            <p class="card-text mb-0"><strong>MatchedScore:</strong> ${app.matchScore} %</p>
             <p class="card-text mb-0"><strong>Status:</strong> ${app.status}</p>
             <p class="card-text mb-2"><strong>Applied on:</strong> ${new Date(app.createdAt).toLocaleDateString()}</p>
             <button class="btn btn-sm btn-outline-primary" onclick="viewDetails('${job._id}')">View Details</button>
@@ -81,4 +81,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 function viewDetails(jobId) {
   window.location.href = `/job-details/job-details.html?id=${jobId}`;
+}
+
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
 }

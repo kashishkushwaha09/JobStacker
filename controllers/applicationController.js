@@ -20,7 +20,8 @@ const applyToJob=async(req,res,next)=>{
 try {
     const jobId=req.body.jobId;
     const profile=req.profile;
-    const application=await applicationService.apply(jobId,profile);
+
+    const application=await applicationService.apply(jobId,profile,req.user);
     res.status(201).json({message:"Applied to job successfully!",application,success:true});
 } catch (error) {
     console.log(error);

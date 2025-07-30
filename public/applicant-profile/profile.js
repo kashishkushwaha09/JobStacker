@@ -1,6 +1,7 @@
 const token = localStorage.getItem("token");
 const editBtn = document.getElementById('editBtn');
 const saveBtn = document.getElementById('saveBtn');
+const cancelBtn=document.getElementById('cancelBtn');
 const form = document.getElementById('profileForm');
 let profile = null;
 let experienceCount = 0;
@@ -15,7 +16,7 @@ let addProjectBtn=document.getElementById('addProjectBtn');
 const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get("id");
 if (!token) {
-  window.location.href = "/login.html"; 
+  window.location.href = "/login/login.html"; 
 }
 if(id){
   insightsBtn.style.display='none';
@@ -25,21 +26,9 @@ if(id){
   addProjectBtn.style.display='none';
   editBtn.style.display='none';
   saveBtn.style.display='none';
+  cancelBtn.style.display='none';
 }
-// const insightData = /* get from backend API */;
 
-// const insightHtml = `
-//   <ul class="list-group">
-//     <li class="list-group-item">✅ Total Applications: <strong>${insightData.totalApplied}</strong></li>
-//     <li class="list-group-item">👁️ Profile Views: <strong>${insightData.totalViewed}</strong></li>
-//     <li class="list-group-item">📄 Resume Downloads: <strong>${insightData.totalDownloads}</strong></li>
-//     <li class="list-group-item text-success">✔️ Accepted: <strong>${insightData.totalAccepted}</strong></li>
-//     <li class="list-group-item text-danger">❌ Rejected: <strong>${insightData.totalRejected}</strong></li>
-//     <li class="list-group-item text-warning">⏳ Pending: <strong>${insightData.totalPending}</strong></li>
-//   </ul>
-// `;
-
-// document.getElementById("insightBody").innerHTML = insightHtml;
 async function loadInsights() {
   try {
     const res = await axios.get("/api/application/insights", {
@@ -201,7 +190,7 @@ function renderProjects(projects) {
     try {
     
       const response = await axios.get(`/api/profile/download-resume/${profile._id}`, {
-        responseType: "blob", // 👈 very important to receive binary data
+        responseType: "blob", // important to receive binary data
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -224,8 +213,8 @@ function renderProjects(projects) {
   }
 function renderResume(resumeUrl, isEditable = false) {
   const container = document.getElementById("resumeContainer");
-  if (!container) return;
-  console.log(profile)
+  if (!container || !resumeUrl) return;
+
 const filename = resumeUrl.split("/").pop(); // "1753676846953_degree.pdf"
 const cleanName = filename.split("_").slice(1).join("_"); // "degree.pdf"
   const html = `
@@ -322,6 +311,7 @@ async function loadProfile() {
     renderProfilePicture(profile.profilePicture);
   } catch (err) {
     console.error("Error loading profile", err);
+    showToast("Something went wrong","danger");
   }
 }
 
@@ -346,6 +336,24 @@ editBtn.addEventListener('click', () => {
     // Toggle buttons
     editBtn.classList.add('d-none');
     saveBtn.classList.remove('d-none');
+    cancelBtn.classList.remove('d-none');
+  });
+  cancelBtn.addEventListener('click', () => {
+    isEditable=false;
+    // Enable all input, select, textarea fields
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+      input.disabled = true;
+    });
+    document.getElementById('addExperienceBtn').disabled = true;
+    document.getElementById('addEducationBtn').disabled = true;
+    document.getElementById('addProjectBtn').disabled = true;
+    renderResume(profile.resumeUrl, isEditable);
+    renderProfilePicture(profile.profilePicture,isEditable);
+    // Toggle buttons
+    editBtn.classList.remove('d-none');
+    saveBtn.classList.add('d-none');
+    cancelBtn.classList.add('d-none');
   });
 
   addExperienceBtn.addEventListener('click', () => {
@@ -535,18 +543,24 @@ collectSectionToFormData(formData,"education");
 collectSectionToFormData(formData,"projects");
 const profilePicInput = document.getElementById("profilePicture");
 console.log(profilePicInput);
-  if (profilePicInput.files[0]) {
+  if (profilePicInput?.files[0]) {
     formData.append("profilePicture", profilePicInput.files[0]);
   }
 
-  // 📄 Resume File
+  // Resume File
   const resumeInput = document.getElementById("resume");
-  if (resumeInput.files[0]) {
+  if (resumeInput?.files[0]) {
     formData.append("resume", resumeInput.files[0]);
   }
 for (let [key, value] of formData.entries()) {
   console.log(`${key}:`, value);
 }
+saveBtn.disabled = true;
+cancelBtn.disabled = true;
+  saveBtn.innerHTML = `
+    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+    Saving...
+  `;
 
   try {
     const response = await axios.patch("/api/profile/applicant", formData, {
@@ -557,6 +571,7 @@ for (let [key, value] of formData.entries()) {
     });
 
     console.log("Response from server:", response.data);
+    showToast(response.data.message,'success');
       isEditable=false;
     // disable all input, select, textarea fields
     const inputs = form.querySelectorAll('input, select, textarea');
@@ -569,18 +584,38 @@ for (let [key, value] of formData.entries()) {
     renderResume(profile.resumeUrl, isEditable);
     renderProfilePicture(profile.profilePicture,isEditable);
     // Toggle buttons
+    saveBtn.disabled = false;
+cancelBtn.disabled = false;
+  saveBtn.innerHTML = `
+  save
+  `;
     editBtn.classList.remove('d-none');
     saveBtn.classList.add('d-none');
+    cancelBtn.classList.add('d-none');
     loadProfile();
 
   } catch (error) {
+    saveBtn.disabled = false;
+cancelBtn.disabled = false;
+saveBtn.innerHTML='Save';
     if (error.response) {
       console.error("Server error:", error.response.data);
+      showToast("Something went wrong","danger");
     } else {
       console.error("Network error:", error.message);
+      showToast("Something went wrong","danger");
     }
   }
 });
 
 
+}
+
+function showToast(message, type = "success") {
+  const toastEl = document.getElementById("myToast");
+  const toastBody = document.getElementById("toastMessage");
+  toastBody.textContent = message;
+  toastEl.className = `toast align-items-center text-bg-${type} border-0`;
+  const toast = new bootstrap.Toast(toastEl);
+  toast.show();
 }
