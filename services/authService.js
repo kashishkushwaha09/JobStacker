@@ -71,6 +71,9 @@ try {
         if (!existingUser) {
             throw new AppError("User not found!", 404);
         }
+         if (!existingUser.isActive) {
+            throw new AppError("Your account is deactivated. Contact support.", 403);
+    }
         const isPasswordMatched=await bcrypt.compare(password,existingUser.password);
         if(!isPasswordMatched){
             throw new AppError('Invalid Password',400);

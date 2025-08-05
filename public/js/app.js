@@ -14,7 +14,10 @@ const nameSpan = document.getElementById("userName");
   if (userRole === "admin") {
     welcomeText.textContent = "Welcome Admin";
     buttonContainer.innerHTML = `<a href="/admin/dashboard.html" class="btn btn-primary">Go to Admin Dashboard</a>`;
-    
+    profileLinkItem.style.display="none";
+    const hr=document.querySelector('.dropdown-divider');
+    hr.classList.add('d-none')
+    console.log(hr);
   } else if (userRole === "recruiter") {
     welcomeText.textContent = "Welcome Recruiter";
     buttonContainer.innerHTML = `<a href="/recruiter-dashboard/dashboard.html" class="btn btn-success">Go to Recruiter Dashboard</a>`;
@@ -28,7 +31,7 @@ const nameSpan = document.getElementById("userName");
     buttonContainer.innerHTML = `<a href="/login/login.html" class="btn btn-outline-secondary">Login to Continue</a>`;
   }
 
-  if (token) {
+  if (token && userRole!=='admin') {
   loadProfile();
 }
 

@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <strong>Posted On:</strong> ${new Date(job.createdAt).toLocaleDateString()}
               </p>
               <p>Status: <strong>${job.isActive ? 'Active' : 'Inactive'}</strong></p>
-              <a href="/job-details/job-details.html?jobId=${job._id}" class="btn btn-info btn-sm me-0">View Details</a>
+              <a href="/job-details/job-details.html?id=${job._id}" class="btn btn-info btn-sm me-0">View Details</a>
               <button class="btn btn-sm btn-outline-primary toggle-status-btn" onclick="toggleJobStatus(event,'${job._id}')">
   Toggle Status
 </button>

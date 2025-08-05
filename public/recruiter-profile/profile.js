@@ -1,4 +1,5 @@
 const token = localStorage.getItem("token");
+const role=localStorage.getItem("role");
 const editBtn = document.getElementById('editBtn');
 const saveBtn = document.getElementById('saveBtn');
 const cancelBtn = document.getElementById("cancelBtn");
@@ -8,7 +9,13 @@ let isEditable = false;
 if (!token) {
     window.location.href = "/login/login.html";
 }
-
+const urlParams = new URLSearchParams(window.location.search);
+const id = urlParams.get("id");
+if(id){
+  editBtn.style.display='none';
+  saveBtn.style.display='none';
+  cancelBtn.style.display='none';
+}
 function renderProfilePicture(profilePictureUrl, isEditable = false) {
     const container = document.getElementById("profilePictureContainer");
     if (!container) return;
@@ -35,7 +42,12 @@ function autoResizeTextarea(textarea) {
 }
 async function loadProfile() {
     try {
-        const res = await axios.get("/api/profile/me", {
+      let res='/api/profile/me';
+      if(id){
+       res=`/api/admin/users/${id}`;
+      }
+
+         res = await axios.get(res, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -112,9 +124,9 @@ for (let [key, value] of formData.entries()) {
 }
 saveBtn.disabled = true;
 cancelBtn.disabled = true;
-  submitBtn.innerHTML = `
+  saveBtn.innerHTML = `
     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-    "Saving..."
+    Saving...
   `;
 
   try {

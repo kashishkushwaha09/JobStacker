@@ -9,7 +9,11 @@ const userSchema=new Schema({
     },
     role:{
         type:String,enum:['applicant','recruiter','admin'],default:'applicant'
-    }
+    },
+    isActive: {
+    type: Boolean,
+    default: true
+  }
 
 },{timestamps:true});
 module.exports=mongoose.model("User",userSchema);

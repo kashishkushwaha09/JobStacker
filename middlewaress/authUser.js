@@ -22,6 +22,9 @@ const authenticateUser=async (req,res,next)=>{
         if(!user){
            throw new AppError("User not found",404);  
         }
+          if (!user.isActive) {
+      return res.status(403).json({ message: "Your account is deactivated. Contact support." });
+    }
         req.user=user;
         req.profile=profile;
         next();

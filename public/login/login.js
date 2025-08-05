@@ -4,6 +4,16 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
+  const userType = document.getElementById("userType").value;
+  let endpoint = "";
+  if (userType === "applicant" || userType === "recruiter") {
+    endpoint = "/api/auth/signIn";
+  }else if (userType === "admin") {
+    endpoint = "/api/admin/signIn";
+  } else {
+    showToast("Please select a user type!","danger");
+    return;
+  }
   // loginbtn
   const btn = document.getElementById("loginbtn");
   btn.disabled = true;
@@ -12,7 +22,7 @@ form.addEventListener("submit", async (e) => {
     Login...
   `;
   try {
-    const response = await axios.post("/api/auth/signIn", {
+    const response = await axios.post(endpoint, {
       email,
       password
     });
@@ -35,7 +45,11 @@ form.addEventListener("submit", async (e) => {
      btn.disabled = false;
     btn.innerHTML = "Login";
     console.error(err);
+     if (err.response?.data?.message) {
+    showToast(err.response.data.message, "danger");
+  } else {
     showToast("Something went wrong", "danger");
+  }
   }
 });
 

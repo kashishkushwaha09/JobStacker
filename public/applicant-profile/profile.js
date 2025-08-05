@@ -1,4 +1,5 @@
 const token = localStorage.getItem("token");
+const role=localStorage.getItem("role");
 const editBtn = document.getElementById('editBtn');
 const saveBtn = document.getElementById('saveBtn');
 const cancelBtn=document.getElementById('cancelBtn');
@@ -54,6 +55,9 @@ function renderExperience(experienceArray){
     experienceCount =experienceArray.length;
   const container = document.getElementById("experienceContainer");
   container.innerHTML = "";
+  if(experienceCount===0){
+    container.innerHTML='<p class="text-danger">No Experience mentioned!</p>';
+  }
    experienceArray.forEach((exp, index) => {
     const html = `
   <div class="experience-entry border rounded p-2 mb-2">
@@ -101,6 +105,9 @@ function renderEducation(educationArray){
     educationCount=educationArray.length;
     const container = document.getElementById("educationContainer");
   container.innerHTML = "";
+  if(educationCount===0){
+    container.innerHTML='<p class="text-danger">No Education mentioned!</p>';
+  }
   educationArray.forEach((edu, index) => {
    const html = `
   <div class="education-entry border rounded p-2 mb-2">
@@ -149,6 +156,9 @@ function renderProjects(projects) {
  // <a href="${resumeUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
           //   📄 View
           // </a>
+  if(projectCount===0){
+    container.innerHTML='<p class="text-danger">No Projects mentioned!</p>';
+  }
   projects.forEach((project, index) => {
     const html = `
       <div class="project-entry border rounded p-2 mb-3">
@@ -213,7 +223,10 @@ function renderProjects(projects) {
   }
 function renderResume(resumeUrl, isEditable = false) {
   const container = document.getElementById("resumeContainer");
-  if (!container || !resumeUrl) return;
+  if (!resumeUrl){
+    container.innerHTML='<p class="text-danger">No Resume mentioned!</p>';
+    return;
+  }
 
 const filename = resumeUrl.split("/").pop(); // "1753676846953_degree.pdf"
 const cleanName = filename.split("_").slice(1).join("_"); // "degree.pdf"
@@ -269,10 +282,16 @@ function renderProfilePicture(profilePictureUrl, isEditable = false){
 
 async function loadProfile() {
   try {
- 
+   
    let res;
+    console.log(id);
    if(id){
-    res = await axios.get(`/api/profile/${id}`, {
+   
+    let route=`/api/profile/${id}`;
+   if(role==='admin'){
+    route=`/api/admin/users/${id}`
+   }
+    res = await axios.get(route, {
       headers: {
         Authorization: `Bearer ${token}`
       }

@@ -4,6 +4,7 @@ const profileController=require('../controllers/profileController');
 const { upload } = require('../middlewaress/fileUpload');
 const authenticateUser=require('../middlewaress/authUser');
 const isRecruiter=require('../middlewaress/checkRecruiter');
+
 router.patch('/applicant',authenticateUser,upload.fields([
    {name:'profilePicture',maxCount:1},
     {name:'resume',maxCount:1}

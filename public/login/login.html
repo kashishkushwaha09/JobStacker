@@ -36,6 +36,15 @@
               <label for="password" class="form-label">Password</label>
               <input type="password" class="form-control" id="password" required />
             </div>
+           <div class="mb-4">
+    <label for="userType" class="form-label">Select Role</label>
+    <select id="userType" class="form-select" required>
+      <option value="">-- Select Role --</option>
+      <option value="applicant">Applicant</option>
+      <option value="recruiter">Recruiter</option>
+      <option value="admin">Admin</option>
+    </select>
+  </div>
         
             <button id="loginbtn" type="submit" class="btn btn-primary w-100">Login</button>
           </form>

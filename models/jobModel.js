@@ -27,6 +27,10 @@ const jobSchema=new Schema({
     type: Boolean,
     default: true
   },
+  isApproved: {
+  type: Boolean,
+  default: false
+},
    jobType: {
     type: String,
     enum: ['Full-Time', 'Part-Time', 'Internship', 'Remote', 'Contract'],

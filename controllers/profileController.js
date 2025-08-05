@@ -204,6 +204,19 @@ const myProfile=async (req,res,next)=>{
         next(error);
     }
 }
+const getProfileForAdmin=async(req,res,next)=>{
+      try {
+        const applicantId =req.params.id;
+        const profile =await profileService.getProfileForAdmin(applicantId);
+        res.status(200).json({message:'profile fetched',profile,success:true});
+    } catch (error) {
+        console.log(error);
+        if (!(error instanceof AppError)) {
+            error = new AppError(error.message, 500);
+        }
+        next(error);
+    }
+}
 module.exports = {
-    resumeDownload,updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile,myProfile
+    resumeDownload,updateProfileApplicant, updateProfileRecruiter,deleteProfile,getProfile,myProfile,getProfileForAdmin
 }
