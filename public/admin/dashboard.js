@@ -91,7 +91,9 @@ function renderUserCards(users) {
     card.innerHTML = `
       <div class="card h-100 d-flex flex-column">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">${user.name || "Unnamed User"}</h5>
+          <h5 class="card-title">${user.name || "Unnamed User"}
+           ${user.hasPremiumAccess ? '<span class="badge bg-warning text-dark ms-2">🌟</span>' : ''}
+           </h5>
           <p class="card-text">
             Email: ${user.userId?.email || "- null"}<br>
             Role: ${user.userId?.role || "- null"}<br>
@@ -120,6 +122,52 @@ function renderUserCards(users) {
     container.appendChild(card);
   });
 }
+async function loadAdminStats() {
+  try {
+    const res = await axios.get("/api/admin/stats",{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const { success, data } = res.data;
+
+    if (!success){
+      showToast("Failed to load stats","danger");
+      return;
+    } 
+
+    // Fill basic numbers
+    document.getElementById("totalUsers").textContent = data.totalUsers;
+    document.getElementById("applicantsCount").textContent = data.applicants;
+    document.getElementById("recruitersCount").textContent = data.recruiters;
+    document.getElementById("activeJobsCount").textContent = data.activeJobs;
+    document.getElementById("totalApplicationsCount").textContent = data.totalApplications;
+
+    // Top Recruiters
+    const recruitersList = document.getElementById("topRecruitersList");
+    recruitersList.innerHTML = "";
+    data.activeRecruiters.forEach(r => {
+      const li = document.createElement("li");
+      li.textContent = `${r.name} (${r.jobsPosted} jobs)`;
+      recruitersList.appendChild(li);
+    });
+
+    // Top Applicants
+    const applicantsList = document.getElementById("topApplicantsList");
+    applicantsList.innerHTML = "";
+    data.activeApplicants.forEach(a => {
+      const li = document.createElement("li");
+      li.textContent = `${a.name} (${a.applications} applications)`;
+      applicantsList.appendChild(li);
+    });
+
+  } catch (error) {
+    console.error("Error loading admin stats:", error);
+  }
+}
+
+// Load stats whenever offcanvas opens
+document.getElementById("adminStatsCanvas").addEventListener("show.bs.offcanvas", loadAdminStats);
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");

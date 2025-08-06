@@ -91,7 +91,8 @@ const skip = (page - 1) * limit;
     const profiles = await Profile.find(finalQuery)
       .populate("userId", "email role isActive")
       .skip(skip)
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .sort({ hasPremiumAccess: -1, updatedAt: -1 });
 
     const total = await Profile.countDocuments(finalQuery);
 
@@ -147,7 +148,7 @@ const getAllJobs=async(query)=>{
     .populate("postedBy", "name companyName")
     .skip((page - 1) * limit)
     .limit(parseInt(limit))
-    .sort({ createdAt: -1 });
+    .sort({ isFeatured: -1, updatedAt: -1 });
 
     return {
     total,

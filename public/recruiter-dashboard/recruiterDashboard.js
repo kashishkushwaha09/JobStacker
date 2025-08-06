@@ -36,26 +36,48 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
     localStorage.removeItem("role");
     window.location.href = "/login/login.html";
 });
-// my jobs
-document.addEventListener("DOMContentLoaded", async () => {
-    const container = document.getElementById("jobsContainer");
-    const token = localStorage.getItem("token");
+function getFilters() {
+  const form = document.getElementById("filterForm");
+  const formData = new FormData(form);
+  const filters = {};
 
-    if (!token) {
-       showToast("You must be logged in", "danger");
-        return;
+  for (let [key, value] of formData.entries()) {
+    if (value.trim() !== "") {
+      filters[key] = value.trim();
     }
+  }
 
-    try {
-        const res = await axios.get("/api/job/postedByRecruiter", {
+  return filters;
+}
+async function fetchAndRenderJobs(search = "", page = 1, limit = 10){
+const filters = getFilters();
+  const queryParams = new URLSearchParams();
+
+  if (search) queryParams.append("search", search);
+
+  for (const [key, value] of Object.entries(filters)) {
+    queryParams.append(key, value);
+  }
+
+  queryParams.append("page", page);
+  queryParams.append("limit", limit);
+  try {
+      const res = await axios.get("/api/job/postedByRecruiter", {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
-
-        const jobs = res.data.jobs;
-        console.log(jobs);
-        if (jobs.length === 0) {
+    const data = await res.data;
+    console.log(data);
+    renderJobCards(data.jobs);
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+  }
+}
+function renderJobCards(jobs) {
+  const container = document.getElementById("jobsContainer");
+  container.innerHTML = "";
+ if (jobs.length === 0) {
            showToast("You haven't posted any jobs yet!", "danger");
             container.innerHTML = "<p>No jobs posted yet.</p>";
             return;
@@ -90,11 +112,31 @@ document.addEventListener("DOMContentLoaded", async () => {
         `;
             container.appendChild(jobCard);
         });
+}
+// my jobs
+document.addEventListener("DOMContentLoaded", async () => {
+    const container = document.getElementById("jobsContainer");
+    const token = localStorage.getItem("token");
+    const searchInput = document.getElementById("searchInput");
+  const filterForm = document.getElementById("filterForm");
+  const toggleFilterBtn = document.getElementById("toggleFilterBtn");
 
-    } catch (error) {
-        console.error("Error fetching jobs:", error);
-         showToast("Failed to load jobs!", "danger");
-    }
+  toggleFilterBtn.addEventListener("click", () => {
+    const isHidden = filterForm.classList.toggle("d-none");
+  toggleFilterBtn.textContent = isHidden ? "Filter Jobs" : "Hide Filters";
+});
+
+
+  searchInput.addEventListener("input", () => {
+    fetchAndRenderJobs(searchInput.value.trim());
+  });
+
+  
+  filterForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    fetchAndRenderJobs(searchInput.value.trim());
+  });
+  fetchAndRenderJobs();
 });
 async function toggleJobStatus(event,jobId) {
   try {

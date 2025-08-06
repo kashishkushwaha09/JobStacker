@@ -58,6 +58,83 @@
 
  <div class="container mt-5">
   <h2 class="mb-4">My Posted Jobs</h2>
+  <div class="row mb-4 justify-content-center">
+    <div class="col-md-6">
+      <input
+        type="text"
+        id="searchInput"
+        class="form-control"
+        placeholder="Search by name,description...."
+      />
+    </div>
+  </div>
+  <div class="container mt-4">
+  <button class="btn btn-outline-primary mb-3" id="toggleFilterBtn">
+    Filter Jobs
+  </button>
+  
+   <form id="filterForm" class="row g-3 mb-4 d-none">
+    <div class="col-md-3">
+      <label for="title" class="form-label">Job Title</label>
+      <input type="text" class="form-control" id="title" name="title" placeholder="e.g., Frontend Developer">
+    </div>
+
+    <div class="col-md-3">
+      <label for="location" class="form-label">Location</label>
+      <input type="text" class="form-control" id="location" name="location" placeholder="City or Remote">
+    </div>
+
+    <div class="col-md-3">
+      <label for="skills" class="form-label">Skills</label>
+      <input type="text" class="form-control" id="skills" name="skills" placeholder="e.g., React, Node.js">
+    </div>
+
+    <div class="col-md-3">
+      <label for="jobType" class="form-label">Job Type</label>
+      <select class="form-select" id="jobType" name="jobType">
+        <option value="">All</option>
+        <option value="Full-Time">Full-time</option>
+        <option value="Part-Time">Part-time</option>
+        <option value="Internship">Internship</option>
+        <option value="Remote">Remote</option>
+        <option value="Contract">Contract</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="experienceLevel" class="form-label">Experience Level</label>
+      <select class="form-select" id="experienceLevel" name="experienceLevel">
+        <option value="">All</option>
+        <option value="Fresher">Fresher</option>
+        <option value="Junior">Junior</option>
+        <option value="Mid-Level">Mid-Level</option>
+        <option value="Senior">Senior</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="isApproved" class="form-label">Approved</label>
+      <select class="form-select" id="isApproved" name="isApproved">
+        <option value="">All</option>
+        <option value="true">Approved</option>
+        <option value="false">Not Approved</option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="isActive" class="form-label">Active Status</label>
+      <select class="form-select" id="isActive" name="isActive">
+        <option value="">All</option>
+        <option value="true">Active</option>
+        <option value="false">Inactive</option>
+      </select>
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </div>
+  </form>
+</div>
   <div id="jobsContainer" class="row row-cols-1 row-cols-md-2 g-4">
     <!-- Jobs will be inserted here -->
   </div>

@@ -26,6 +26,12 @@
         <li class="nav-item">
           <a class="nav-link fw-semibold" href="/admin/jobs/jobs.html">Jobs</a>
         </li>
+         <li class="nav-item">
+          <a class="nav-link fw-semibold" href="/admin/applications/applications.html">Applications</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fw-semibold" href="/admin/orders/orders.html">Orders</a>
+        </li>
        
   
         <li class="nav-item dropdown">
@@ -42,6 +48,9 @@
 </nav>
 
  <div class="container mt-5">
+  <button class="btn btn-outline-primary" data-bs-toggle="offcanvas" data-bs-target="#adminStatsCanvas">
+  📊 View Stats
+</button>
    <h2 class="mb-4 text-center">All Users</h2>
     <div class="row mb-4 justify-content-center">
     <div class="col-md-6">
@@ -119,14 +128,26 @@
     
   </div>
 </div>
-  <!-- TOAST -->
-<div class="toast-container position-fixed bottom-0 end-0 p-3">
-  <div id="myToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage">
-        Welcome!
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+  <!-- Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="adminStatsCanvas">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">📊 Admin Stats</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div id="statsContainer">
+      <p><strong>Total Users:</strong> <span id="totalUsers">0</span></p>
+      <p><strong>Applicants:</strong> <span id="applicantsCount">0</span></p>
+      <p><strong>Recruiters:</strong> <span id="recruitersCount">0</span></p>
+      <p><strong>Active Jobs:</strong> <span id="activeJobsCount">0</span></p>
+      <p><strong>Total Applications:</strong> <span id="totalApplicationsCount">0</span></p>
+
+      <hr>
+      <h6>Top Recruiters</h6>
+      <ul id="topRecruitersList"></ul>
+
+      <h6>Top Applicants</h6>
+      <ul id="topApplicantsList"></ul>
     </div>
   </div>
 </div>

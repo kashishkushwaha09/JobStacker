@@ -72,7 +72,9 @@ function renderJobCards(jobs) {
     card.innerHTML = `
       <div class="card h-100 d-flex flex-column">
         <div class="card-body d-flex flex-column">
-          <h5 class="card-title">${job.title}</h5>
+          <h5 class="card-title">${job.title} 
+           ${job.isFeatured ? '<span class="badge bg-warning text-dark ms-2">🌟</span>' : ''}
+           </h5>
           <p class="card-text">
             <strong>Company:</strong> ${job.postedBy?.companyName || "N/A"}<br>
             <strong>Location:</strong> ${job.location}<br>
@@ -90,6 +92,9 @@ function renderJobCards(jobs) {
               onclick="toggleJobApproval('${job._id}', ${!job.isApproved})">
               ${job.isApproved ? "Disapprove" : "Approve"}
             </button>
+             <button class="btn btn-sm btn-secondary" onclick="viewDetails('${job._id}')">
+              View Details
+            </button>
             <button class="btn btn-sm btn-danger" onclick="deleteJob('${job._id}')">
               Delete
             </button>
@@ -100,6 +105,9 @@ function renderJobCards(jobs) {
 
     container.appendChild(card);
   });
+}
+function viewDetails(jobId) {
+  window.location.href = `/job-details/job-details.html?id=${jobId}`;
 }
 async function toggleJobApproval(jobId, status) {
   try {
@@ -139,7 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   toggleFilterBtn.addEventListener("click", () => {
     const isHidden = filterForm.classList.toggle("d-none");
-  toggleFilterBtn.textContent = isHidden ? "Filter Users" : "Hide Filters";
+  toggleFilterBtn.textContent = isHidden ? "Filter Jobs" : "Hide Filters";
 });
 
 

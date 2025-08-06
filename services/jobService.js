@@ -128,17 +128,56 @@ if (user.role === "applicant" && !job.viewedBy.includes(profileId)) {
        throw error;
 }
 }
-const getJobsPostedByUser=async(profileId)=>{
+const getJobsPostedByUser=async(profileId,query)=>{
     try {
-   const jobs=await Job.find({postedBy:profileId})
-    .sort({ isFeatured: -1, createdAt: -1 })
-   .populate('postedBy','name companyName companyAbout companyLocation')
-   .lean();
-   if (!jobs) {
-  throw new AppError("Jobs not found", 404);
-}
+      const {
+    page = 1,
+    limit = 10,
+    title,
+    location,
+    skills,
+    isApproved,
+    isActive,
+    jobType,
+    experienceLevel,
+    search,
+  } =query;
+    const filter = {};
 
-   return jobs;
+  if (title) {
+    filter.title = { $regex: title, $options: "i" };
+  }
+  if (location) {
+    filter.location = { $regex: location, $options: "i" };
+  }
+  if (skills) {
+    const skillsArray = skills.split(",").map(s => s.trim());
+    filter.skillsRequired = { $in: skillsArray };
+  }
+   if (isApproved !== undefined) filter.isApproved = isApproved === "true";
+  if (isActive !== undefined) filter.isActive = isActive === "true";
+  if (jobType) filter.jobType = jobType;
+  if (experienceLevel) filter.experienceLevel = experienceLevel;
+  if (search) {
+    filter.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } }
+    ];
+  }
+  filter.postedBy=profileId;
+  const total = await Job.countDocuments(filter);
+  const jobs = await Job.find(filter)
+      .populate("postedBy", "name companyName companyAbout companyLocation")
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .sort({ isFeatured: -1, updatedAt: -1 });
+  
+      return {
+      total,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      jobs
+    }
 } catch (error) {
      console.log(error);
         if (!(error instanceof AppError)) {

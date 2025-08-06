@@ -1,6 +1,7 @@
 const { AppError } = require("../utils/appError");
 const Application=require('../models/applicationModel');
 const jobService=require('../services/jobService');
+const Job=require("../models/jobModel");
 const getInsights=async(applicantId)=>{
   try {
     const applications = await Application.find({ applicant: applicantId });
@@ -65,7 +66,7 @@ const getMyApplications=async(profileId)=>{
 }
 const getApplicationsByJob=async(jobId,profileId)=>{
     try {
-        const job=await jobService.getOne(jobId);
+        const job=await Job.findById(jobId);
     if (job.postedBy._id.toString() !== profileId.toString()) {
       throw new AppError("Unauthorized access", 403);
     }

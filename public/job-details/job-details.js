@@ -14,7 +14,11 @@ console.log(jobId);
   }
 
   try {
-    const res = await axios.get(`/api/job/${jobId}`,{
+    let res=`/api/job/${jobId}`;
+    if(role==="admin"){
+      res=`/api/admin/jobs/${jobId}`;
+    }
+     res = await axios.get(res,{
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -42,8 +46,6 @@ console.log(jobId);
         <p><strong>Skills Required:</strong> ${job.skillsRequired.join(", ")}</p>
          <p><strong>Salary:</strong> ${job.salary}</p>
          ${role==='applicant'?'<button class="btn btn-primary mt-3" id="applyBtn">Apply Now</button>':''}
-        
-      
     `;
    if(!isOpen && role==='applicant'){
     const applyBtn = document.getElementById('applyBtn');
