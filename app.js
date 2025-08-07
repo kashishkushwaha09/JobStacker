@@ -39,7 +39,7 @@ const connectToMongo=async()=>{
         app.listen(3000,()=>{
             console.log("app listening on the localhost 3000 successfully!");
         })
-        // Run every minute
+        // Run every day
 cron.schedule('0 0 * * *', () => {
   console.log('Running scheduled job: deactivateExpiredJobs');
   deactivateExpiredJobs();
