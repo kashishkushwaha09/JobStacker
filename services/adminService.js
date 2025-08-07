@@ -39,9 +39,7 @@ const getAllUsers = async (query) => {
       skills,
       companyName,
       hasPremiumAccess,
-      search,
-      page = 1,
-      limit = 10
+      search
     } =query;
    let userFilter = {};
     if (role) userFilter.role = role;
@@ -54,8 +52,6 @@ const getAllUsers = async (query) => {
     if (userIds.length === 0) {
       return {
         total: 0,
-        page,
-        limit,
         users: [],
       };
     }
@@ -86,20 +82,20 @@ if (search) {
 const finalQuery = Object.keys(searchQuery).length > 0
   ? { $and: [profileQuery, searchQuery] }
   : profileQuery;
-const skip = (page - 1) * limit;
+// const skip = (page - 1) * limit;
 
     const profiles = await Profile.find(finalQuery)
       .populate("userId", "email role isActive")
-      .skip(skip)
-      .limit(Number(limit))
+      // .skip(skip)
+      // .limit(Number(limit))
       .sort({ hasPremiumAccess: -1, updatedAt: -1 });
 
     const total = await Profile.countDocuments(finalQuery);
 
     return {
         total: total,
-        page,
-        limit,
+        // page,
+        // limit,
         users:profiles
       };
   } catch (error) {
@@ -110,8 +106,8 @@ const skip = (page - 1) * limit;
 const getAllJobs=async(query)=>{
   try {
        const {
-    page = 1,
-    limit = 10,
+    // page = 1,
+    // limit = 10,
     title,
     location,
     skills,
@@ -146,14 +142,14 @@ const getAllJobs=async(query)=>{
   const total = await Job.countDocuments(filter);
   const jobs = await Job.find(filter)
     .populate("postedBy", "name companyName")
-    .skip((page - 1) * limit)
-    .limit(parseInt(limit))
+    // .skip((page - 1) * limit)
+    // .limit(parseInt(limit))
     .sort({ isFeatured: -1, updatedAt: -1 });
 
     return {
     total,
-    page: parseInt(page),
-    limit: parseInt(limit),
+    // page: parseInt(page),
+    // limit: parseInt(limit),
     jobs
   }
   } catch (error) {

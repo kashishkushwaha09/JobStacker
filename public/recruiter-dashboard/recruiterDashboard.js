@@ -17,7 +17,6 @@ async function loadProfile() {
         });
 
         const profile = res.data.profile;
-        console.log(profile);
         nameSpan.innerText = profile.name || "Recruiter";
     if(profile.hasPremiumAccess){
         buyPremiumBtn.style.display = "none";
@@ -49,7 +48,7 @@ function getFilters() {
 
   return filters;
 }
-async function fetchAndRenderJobs(search = "", page = 1, limit = 10){
+async function fetchAndRenderJobs(search = ""){
 const filters = getFilters();
   const queryParams = new URLSearchParams();
 
@@ -59,10 +58,9 @@ const filters = getFilters();
     queryParams.append(key, value);
   }
 
-  queryParams.append("page", page);
-  queryParams.append("limit", limit);
   try {
       const res = await axios.get("/api/job/postedByRecruiter", {
+            params: queryParams,
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -115,8 +113,6 @@ function renderJobCards(jobs) {
 }
 // my jobs
 document.addEventListener("DOMContentLoaded", async () => {
-    const container = document.getElementById("jobsContainer");
-    const token = localStorage.getItem("token");
     const searchInput = document.getElementById("searchInput");
   const filterForm = document.getElementById("filterForm");
   const toggleFilterBtn = document.getElementById("toggleFilterBtn");

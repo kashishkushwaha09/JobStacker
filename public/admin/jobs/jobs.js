@@ -29,7 +29,7 @@ function getFilters() {
 
   return filters;
 }
-async function fetchAndRenderJobs(search = "", page = 1, limit = 10){
+async function fetchAndRenderJobs(search = ""){
 const filters = getFilters();
   const queryParams = new URLSearchParams();
 
@@ -38,9 +38,7 @@ const filters = getFilters();
   for (const [key, value] of Object.entries(filters)) {
     queryParams.append(key, value);
   }
-
-  queryParams.append("page", page);
-  queryParams.append("limit", limit);
+  
   try {
      const res=await axios.get(`/api/admin/jobs?${queryParams.toString()}`,{
       headers: {

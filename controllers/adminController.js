@@ -315,6 +315,29 @@ const getAllApplications = async (req, res, next) => {
     next(err);
   }
 };
+const deleteUserAndProfile=async(req,res,next)=>{
+   const userId = req.params.id;
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+    const profile = await Profile.findOne({ userId }).session(session);
+     if (profile) {
+      await Profile.findByIdAndDelete(profile._id).session(session);
+    }
+    await User.findByIdAndDelete(userId).session(session);
+   
+    await session.commitTransaction();
+    session.endSession();
+
+    return res.status(200).json({ success: true, message: 'User and related data deleted.' });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error(error);
+    next(error);
+    
+  }
+}
 module.exports={
   signInUser,
   getAllUsers,
@@ -325,5 +348,6 @@ module.exports={
   deleteJob,
   getPremiumPurchases,
   getAdminStats,
-  getAllApplications
+  getAllApplications,
+  deleteUserAndProfile
 };

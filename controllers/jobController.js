@@ -53,8 +53,8 @@ try {
 const getAll=async(req,res,next)=>{
 try {
     const profileId=req.profile._id;
-    const jobs=await jobService.getAll(profileId);
-    res.status(200).json({message:"Jobs fetched successfully!",jobs,success:true});
+    const { jobs,total}=await jobService.getAll(profileId,req.query);
+    res.status(200).json({message:"Jobs fetched successfully!",jobs,total,success:true});
 } catch (error) {
     console.log(error);
     if (!(error instanceof AppError)) {
@@ -81,8 +81,8 @@ try {
 const getJobsPostedByUser=async(req,res,next)=>{
 try {
     const profileId=req.profile._id;
-     const result=await jobService.getJobsPostedByUser(profileId,req.query);
-    res.status(200).json({message:"Job fetched successfully!",result,success:true});
+     const { jobs,total}=await jobService.getJobsPostedByUser(profileId,req.query);
+    res.status(200).json({message:"Job fetched successfully!",jobs,total,success:true});
 } catch (error) {
     console.log(error);
     if (!(error instanceof AppError)) {

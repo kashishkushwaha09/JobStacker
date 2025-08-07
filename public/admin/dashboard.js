@@ -49,7 +49,7 @@ async function toggleStatus(userId){
   }
 }
 
-async function fetchAndRenderUsers(search = "", page = 1, limit = 10) {
+async function fetchAndRenderUsers(search = "") {
   const filters = getFilters();
   const queryParams = new URLSearchParams();
 
@@ -58,9 +58,6 @@ async function fetchAndRenderUsers(search = "", page = 1, limit = 10) {
   for (const [key, value] of Object.entries(filters)) {
     queryParams.append(key, value);
   }
-
-  queryParams.append("page", page);
-  queryParams.append("limit", limit);
 
   try {
      const res=await axios.get(`/api/admin/users?${queryParams.toString()}`,{
@@ -121,6 +118,24 @@ function renderUserCards(users) {
     `;
     container.appendChild(card);
   });
+}
+async function deleteUser(userId){
+try {
+  const response = await axios.delete(`/api/admin/users/${userId}`,{
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    showToast(response.data.message,"success");
+    fetchAndRenderUsers();
+} catch (error) {
+   if (error.response) {
+      showToast('Error: ' + error.response.data.message,"danger");
+    } else {
+      showToast('Something went wrong!',"danger");
+    }
+    console.error('Delete error:', error);
+}
 }
 async function loadAdminStats() {
   try {

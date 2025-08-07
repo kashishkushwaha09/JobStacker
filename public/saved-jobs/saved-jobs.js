@@ -20,16 +20,20 @@ async function loadSavedJobs() {
     }
 
     jobs.forEach(({ job }) => {
-      const card = document.createElement("div");
-      card.className = "card mb-2";
-      card.innerHTML = `
-        <div class="card-body">
-          <h5>${job.title}</h5>
-          <p>${job.description}</p>
-          <button class="btn btn-danger btn-sm" onclick="unsaveJob('${job._id}')">Unsave</button>
-        </div>
-      `;
-      container.appendChild(card);
+      const col = document.createElement("div");
+  col.className = "col"; // col works because parent has row-cols set
+
+  col.innerHTML = `
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">${job.title}</h5>
+        <p class="card-text">${job.description}</p>
+        <button class="btn btn-danger btn-sm" onclick="unsaveJob('${job._id}')">Unsave</button>
+      </div>
+    </div>
+  `;
+
+  container.appendChild(col);
     });
 
   } catch (err) {

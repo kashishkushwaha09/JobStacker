@@ -7,7 +7,7 @@ router.post('/signIn',adminController.signInUser);
 router.get('/users',authenticateAdmin,adminController.getAllUsers);
 router.get('/users/:id',authenticateAdmin,profileController.getProfileForAdmin);
 router.patch('/users/:id/status',authenticateAdmin,adminController.updateUserStatus);
-// router.delete('/user/:id',authenticateAdmin,adminController.deleteUser);
+router.delete('/users/:id',authenticateAdmin,adminController.deleteUserAndProfile);
 router.get('/jobs',authenticateAdmin,adminController.getAllJobs);
 router.get('/jobs/:id',authenticateAdmin,adminController.getOneJob);
 router.patch('/jobs/:id/status',authenticateAdmin,adminController.toggleJobApproval);

@@ -1,5 +1,11 @@
 const mongoose=require('mongoose');
 const Schema=mongoose.Schema;
+
+const Job = require('../models/jobModel');
+const Application = require('../models/applicationModel');
+const SavedJob = require('../models/savedJobModel');
+const ProfileView = require('../models/profileViewModel');
+
 const profileSchema=new Schema({
 userId:{type:Schema.Types.ObjectId,ref:"User", required:true},
 //common fields for both recruiter and applicant
@@ -67,4 +73,23 @@ resumeDownloadCount: {
   companyAbout:String,
   companyLocation:String,
 },{timestamps:true});
+
+profileSchema.pre('findOneAndDelete', async function (next) {
+  try {
+    const profileId = this.getQuery()._id;
+
+    await Promise.all([
+      Job.deleteMany({ postedBy: profileId }),
+      Application.deleteMany({ applicant: profileId }),
+      SavedJob.deleteMany({ applicant: profileId }),
+      ProfileView.deleteMany({ $or: [{ recruiter: profileId }, { applicant: profileId }] }),
+     
+    ]);
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports=mongoose.model("Profile",profileSchema);

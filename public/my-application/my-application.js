@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     applications.forEach(app => {
       const job = app.job;
-     console.log(job._id)
+     console.log(job)
+      if (!job) return; 
       const div = document.createElement('div');
       div.className = 'col-md-6';
 
