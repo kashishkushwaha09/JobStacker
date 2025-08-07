@@ -28,6 +28,9 @@ app.use('/api/application',applicationRoute);
 app.use('/api/order',orderRoute);
 app.use('/api/saved-jobs',savedJobsRoute);
 app.use('/api/admin',adminRoute);
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
 app.use(errorMiddleware);
 const connectToMongo=async()=>{
     try {
@@ -37,10 +40,10 @@ const connectToMongo=async()=>{
             console.log("app listening on the localhost 3000 successfully!");
         })
         // Run every minute
-// cron.schedule('* * * * *', () => {
-//   console.log('Running scheduled job: deactivateExpiredJobs');
-//   deactivateExpiredJobs();
-// });
+cron.schedule('0 0 * * *', () => {
+  console.log('Running scheduled job: deactivateExpiredJobs');
+  deactivateExpiredJobs();
+});
     } catch (error) {
         console.error(error);
         console.error("Mongoose connection error!");
