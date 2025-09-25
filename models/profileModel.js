@@ -7,7 +7,7 @@ const SavedJob = require('../models/savedJobModel');
 const ProfileView = require('../models/profileViewModel');
 
 const profileSchema=new Schema({
-userId:{type:Schema.Types.ObjectId,ref:"User", required:true},
+userId:{type:Schema.Types.ObjectId,ref:"User",index:true, required:true},
 //common fields for both recruiter and applicant
 name:{type:String,required:true},
 headline:String,

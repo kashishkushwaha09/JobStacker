@@ -17,5 +17,6 @@ const profileViewSchema = new mongoose.Schema({
     default: Date.now
   }
 });
+profileViewSchema.index({ applicantId: 1, recruiterId: 1 }, { unique: true });
 
 module.exports = mongoose.model('ProfileView', profileViewSchema);

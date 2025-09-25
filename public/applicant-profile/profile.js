@@ -221,41 +221,45 @@ function renderProjects(projects) {
       alert("Failed to download resume. Please try again.");
     }
   }
+
 function renderResume(resumeUrl, isEditable = false) {
   const container = document.getElementById("resumeContainer");
-  if (!resumeUrl){
-    container.innerHTML='<p class="text-danger">No Resume mentioned!</p>';
-    return;
+
+  let resumeHtml = '';
+  if (resumeUrl) {
+    const filename = resumeUrl.split("/").pop();
+    const cleanName = filename.split("_").slice(1).join("_");
+    resumeHtml = `
+      <div class="d-flex gap-2 mb-2">
+        <a href="${resumeUrl}" target="_blank" class="btn btn-outline-primary btn-sm">
+          View Resume ${cleanName}
+        </a>
+        ${
+          role === 'recruiter'
+            ? `<button class="btn btn-outline-success btn-sm" onclick="downloadResume(event)">
+                 Download Resume
+               </button>`
+            : ''
+        }
+      </div>
+    `;
+  } else {
+    resumeHtml = '<p class="text-danger">No Resume mentioned!</p>';
   }
 
-const filename = resumeUrl.split("/").pop(); // "1753676846953_degree.pdf"
-const cleanName = filename.split("_").slice(1).join("_"); // "degree.pdf"
-  const html = `
+  // Add file input if editable
+  const inputHtml = isEditable
+    ? `<input type="file" class="form-control mt-2" id="resume" name="resume" accept=".pdf,.doc,.docx" />`
+    : '';
+
+  container.innerHTML = `
     <div class="mb-3">
-      ${
-        resumeUrl
-          ? `
-        <div class="d-flex gap-2 mb-2">
-        <a href="${resumeUrl}" target="_blank" class="btn btn-outline-primary btn-sm" >
-  View Resume ${cleanName}
-</a>
-<button  class="btn btn-outline-success btn-sm" onclick="downloadResume(event)">Download Resume</button>
-
-      </div>
-        `
-          : `<p class="text-muted">No resume uploaded</p>`
-      }
-
-      ${
-        isEditable
-          ? `<input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx" />`
-          : ''
-      }
+      ${resumeHtml}
+      ${inputHtml}
     </div>
   `;
-
-  container.innerHTML = html;
 }
+
 
 function renderProfilePicture(profilePictureUrl, isEditable = false){
      const container = document.getElementById("profilePictureContainer");

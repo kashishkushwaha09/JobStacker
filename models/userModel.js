@@ -8,7 +8,7 @@ const userSchema=new Schema({
         type:String, required:true
     },
     role:{
-        type:String,enum:['applicant','recruiter','admin'],default:'applicant'
+        type:String,enum:['applicant','recruiter','admin'],default:'applicant',index:true
     },
     isActive: {
     type: Boolean,

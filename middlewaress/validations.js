@@ -21,7 +21,7 @@ const signInValidation=[
 ]
 const jobValidation=[
     body("title").trim().notEmpty().withMessage('Name is required'),
-    body("description").trim().notEmpty().withMessage('Name is required'),
+    body("description").trim().notEmpty().withMessage('description is required'),
     body("salary").trim().notEmpty().withMessage('salary is required'),
     body("location").trim().notEmpty().withMessage('location is required'),
     body("jobType")

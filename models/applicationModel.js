@@ -40,4 +40,8 @@ resumeDownloaded: {
 },
 }, { timestamps: true });
 
+applicationSchema.index({ job: 1 });
+applicationSchema.index({ job: 1, applicant: 1 },{unique:true});
+applicationSchema.index({ job: 1, "applicant.hasPremiumAccess": -1, createdAt: 1, matchScore: -1 });
+
 module.exports = mongoose.model("Application", applicationSchema);

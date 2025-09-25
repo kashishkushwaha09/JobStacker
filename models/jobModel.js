@@ -58,5 +58,13 @@ views: {
   default: 0
 }
 },{timestamps:true});
+jobSchema.index({ postedBy: 1 });  
+jobSchema.index({ isActive: 1 });  
+jobSchema.index({ isApproved: 1 });  
+jobSchema.index({ jobType: 1 });  
+jobSchema.index({ experienceLevel: 1 });  
+jobSchema.index({ isFeatured: -1, updatedAt: -1 });  
+jobSchema.index({ _id: 1, postedBy: 1 });            
+jobSchema.index({ title: "text", description: "text", location: "text", skillsRequired: "text" }); 
 
 module.exports=mongoose.model("Job",jobSchema);

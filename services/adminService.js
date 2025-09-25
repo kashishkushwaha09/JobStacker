@@ -10,6 +10,7 @@ const signIn = async (email, password) => {
        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
         // return JWT token
         const token = jwt.sign({ role: "admin" }, process.env.SECRET_KEY, { expiresIn: "4d" });
+        console.log(token);
         await sendEmail(
             email,
             "Welcome Back, Admin 👥 | JobStacker",

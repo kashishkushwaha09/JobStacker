@@ -273,7 +273,7 @@ const getAdminStats = async (req, res,next) => {
     });
 
   } catch (error) {
-    console.error("Error fetching stats:", err);
+    console.error("Error fetching stats:", error);
     if (!(error instanceof AppError)) {
       error = new AppError("Something went wrong", 500);
     }
